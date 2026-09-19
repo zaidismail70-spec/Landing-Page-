@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d4b48">
+  <meta name="description" content="روتين بلازما المتكامل للعناية بالشعر من Betolla. اختاري البكج المناسب واطلبيه مباشرة عبر واتساب.">
+  <title>PLASMA Hair Care | Betolla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230d4b48'/%3E%3Cpath d='M20 48V16h14c9 0 15 5 15 13S43 42 34 42h-7v6h-7zm7-13h7c5 0 8-2 8-6s-3-6-8-6h-7v12z' fill='%23dfbd6b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <header class="nav" id="top">
+    <a class="brand" href="#top" aria-label="Betolla Plasma home">
+      <span class="brand-mark">P</span>
+      <span><strong>PLASMA</strong><small>by BETOLLA</small></span>
+    </a>
+    <nav aria-label="التنقل الرئيسي">
+      <a href="#packages" data-i18n="navPackages">البكجات</a>
+      <a href="#products" data-i18n="navProducts">المنتجات</a>
+      <a href="#routine" data-i18n="navRoutine">برنامجك</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="lang" id="langToggle" type="button" aria-label="Switch language">EN</button>
+      <a class="mini-cta" href="#order" data-i18n="orderNow">اطلبي الآن</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section" aria-labelledby="heroTitle">
+      <div class="hero-copy reveal">
+        <span class="eyebrow" data-i18n="heroEyebrow">روتين متكامل لشعر أكثر نعومة وحيوية</span>
+        <h1 id="heroTitle"><span data-i18n="heroLine1">شعرك يستحق</span><em data-i18n="heroLine2">عناية تُرى وتُحس</em></h1>
+        <p data-i18n="heroText">مجموعة بلازما تجمع التنظيف اللطيف، الترطيب العميق والعناية اليومية في خطوات واضحة وسهلة.</p>
+        <div class="hero-actions">
+          <a class="primary-btn magnetic" href="#packages"><span data-i18n="discover">اكتشفي البكجات</span><span aria-hidden="true">←</span></a>
+          <button class="text-btn" type="button" data-scroll="#routine"><span class="play">▶</span><span data-i18n="seeRoutine">شاهدي برنامج الاستخدام</span></button>
+        </div>
+        <div class="trust-row">
+          <span><b>✓</b><span data-i18n="deliveryAll">توصيل لكل الأردن</span></span>
+          <span><b>✓</b><span data-i18n="cashDelivery">الدفع عند الاستلام</span></span>
+          <span><b>✓</b><span data-i18n="sulfateFree">عناية لطيفة بالشعر</span></span>
+        </div>
+      </div>
+      <div class="hero-visual reveal" aria-label="بكج بلازما الكامل">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+        <div class="glow"></div>
+        <img src="assets/complete.webp" alt="بكج بلازما الكامل من أربع قطع" fetchpriority="high">
+        <div class="float-card card-price"><small data-i18n="completeSet">البكج الكامل</small><strong>30 <span data-i18n="jod">د.أ</span></strong><del>40 <span data-i18n="jod">د.أ</span></del></div>
+        <div class="float-card card-count"><strong>4</strong><small data-i18n="steps">خطوات متكاملة</small></div>
+      </div>
+      <a class="scroll-cue" href="#packages" aria-label="انتقل للبكجات"><span></span></a>
+    </section>
+
+    <section class="promise section reveal" aria-label="فوائد مجموعة بلازما">
+      <div><span>01</span><strong data-i18n="benefitClean">تنظيف لطيف</strong><p data-i18n="benefitCleanText">يحافظ على رطوبة الشعر الطبيعية</p></div>
+      <div><span>02</span><strong data-i18n="benefitMoisture">ترطيب متوازن</strong><p data-i18n="benefitMoistureText">للشعر الجاف والمتعب</p></div>
+      <div><span>03</span><strong data-i18n="benefitShine">نعومة ولمعان</strong><p data-i18n="benefitShineText">روتين يسهل التصفيف اليومي</p></div>
+    </section>
+
+    <section class="packages section" id="packages">
+      <div class="section-heading reveal">
+        <span class="eyebrow" data-i18n="chooseRoutine">اختاري روتينك</span>
+        <h2 data-i18n="packagesTitle">بكجان، وهدف واحد:<br>شعر تحبينه كل يوم</h2>
+      </div>
+      <div class="package-grid">
+        <article class="package-card featured reveal" data-package="complete">
+          <div class="badge" data-i18n="bestValue">الأكثر توفيرًا</div>
+          <div class="package-image"><img src="assets/complete.webp" alt="بكج بلازما الكامل"></div>
+          <div class="package-copy">
+            <small>PLASMA COMPLETE</small>
+            <h3 data-i18n="completeTitle">بكج العناية الكاملة</h3>
+            <p data-i18n="completeDesc">روتين من أربع خطوات للتنظيف، الترطيب، العناية واللمسة النهائية.</p>
+            <ul>
+              <li data-i18n="shampoo">شامبو بلازما</li><li data-i18n="conditioner">بلسم بلازما</li>
+              <li data-i18n="mask">ماسك بلازما</li><li data-i18n="serum">سيروم بلازما</li>
+            </ul>
+            <div class="price"><del>40 <span data-i18n="jod">د.أ</span></del><strong>30 <span data-i18n="jod">د.أ</span></strong></div>
+            <button class="primary-btn choose-package" type="button" data-value="complete"><span data-i18n="chooseComplete">اختاري البكج الكامل</span><span>←</span></button>
+          </div>
+        </article>
+        <article class="package-card reveal" data-package="duo">
+          <div class="package-image"><img src="assets/duo.webp" alt="بكج بلازما الثنائي" loading="lazy"></div>
+          <div class="package-copy">
+            <small>PLASMA DUO</small>
+            <h3 data-i18n="duoTitle">بكج العناية اليومية</h3>
+            <p data-i18n="duoDesc">خطوتان أساسيتان لنظافة لطيفة وترطيب يساعد على تقليل التشابك.</p>
+            <ul><li data-i18n="shampoo">شامبو بلازما</li><li data-i18n="conditioner">بلسم بلازما</li></ul>
+            <div class="price"><del>25 <span data-i18n="jod">د.أ</span></del><strong>20 <span data-i18n="jod">د.أ</span></strong></div>
+            <button class="secondary-btn choose-package" type="button" data-value="duo"><span data-i18n="chooseDuo">اختاري البكج الثنائي</span><span>←</span></button>
+          </div>
+        </article>
+      </div>
+      <p class="delivery-note reveal"><span>🚚</span><span data-i18n="deliveryNote">التوصيل 3 دنانير لجميع محافظات الأردن — الدفع عند الاستلام</span></p>
+    </section>
+
+    <section class="products section" id="products">
+      <div class="section-heading centered reveal">
+        <span class="eyebrow" data-i18n="insideBottle">داخل كل عبوة</span>
+        <h2 data-i18n="productsTitle">اعرفي كل خطوة في روتينك</h2>
+        <p data-i18n="productsLead">اضغطي على المنتج لتشاهدي مكوناته، فائدته وطريقة استخدامه.</p>
+      </div>
+      <div class="product-explorer reveal">
+        <div class="product-tabs" role="tablist" aria-label="منتجات بلازما">
+          <button class="product-tab active" type="button" role="tab" aria-selected="true" data-product="shampoo"><span class="tab-num">01</span><span data-i18n="shampoo">الشامبو</span></button>
+          <button class="product-tab" type="button" role="tab" aria-selected="false" data-product="conditioner"><span class="tab-num">02</span><span data-i18n="conditioner">البلسم</span></button>
+          <button class="product-tab" type="button" role="tab" aria-selected="false" data-product="mask"><span class="tab-num">03</span><span data-i18n="mask">الماسك</span></button>
+          <button class="product-tab" type="button" role="tab" aria-selected="false" data-product="serum"><span class="tab-num">04</span><span data-i18n="serum">السيروم</span></button>
+        </div>
+        <div class="product-stage" id="productPanel" role="tabpanel" aria-live="polite">
+          <div class="stage-image"><span class="stage-ring"></span><img id="productImage" src="assets/shampoo.webp" alt="شامبو بلازما"></div>
+          <div class="stage-copy">
+            <small id="productStep">STEP 01</small>
+            <h3 id="productName">شامبو بلازما</h3>
+            <p id="productDescription">ينظف الشعر والفروة بلطف دون إزالة الرطوبة الطبيعية، ويترك الشعر أكثر نعومة ولمعانًا.</p>
+            <div class="detail-accordion">
+              <button class="detail-toggle open" type="button"><span data-i18n="ingredients">المكونات المميزة</span><span>＋</span></button>
+              <div class="detail-content open"><div class="chips" id="ingredientChips"></div></div>
+              <button class="detail-toggle" type="button"><span data-i18n="whySpecial">لماذا هي مميزة؟</span><span>＋</span></button>
+              <div class="detail-content"><p id="productBenefit"></p></div>
+              <button class="detail-toggle" type="button"><span data-i18n="howUse">طريقة الاستخدام</span><span>＋</span></button>
+              <div class="detail-content"><p id="productUse"></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="routine section" id="routine">
+      <div class="routine-shell reveal">
+        <div class="routine-intro">
+          <span class="eyebrow" data-i18n="weeklyPlan">برنامجك الأسبوعي</span>
+          <h2 data-i18n="routineTitle">اختاري البكج، ونحن نرتب لكِ الأسبوع</h2>
+          <p data-i18n="routineLead">برنامج بسيط يساعدك على استخدام المنتجات بالترتيب الصحيح. عدّليه حسب حاجة شعرك.</p>
+          <div class="segmented" role="group" aria-label="اختيار البكج للبرنامج">
+            <button class="active" type="button" data-plan="complete" data-i18n="completeShort">البكج الرباعي</button>
+            <button type="button" data-plan="duo" data-i18n="duoShort">البكج الثنائي</button>
+          </div>
+          <div class="hair-note"><span>✦</span><p data-i18n="hairNote">للشعر الجاف: اغسليه 3–4 مرات أسبوعيًا. للشعر الدهني: استخدمي الشامبو حسب الحاجة، وضعي البلسم والماسك بعيدًا عن الفروة.</p></div>
+        </div>
+        <div class="week" id="weekPlan" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="order section" id="order">
+      <div class="order-shell reveal">
+        <div class="order-summary">
+          <span class="eyebrow" data-i18n="easyOrder">طلبك بخطوات بسيطة</span>
+          <h2 data-i18n="orderTitle">اختاري، أكّدي، وكمّلي طلبك على واتساب</h2>
+          <p data-i18n="orderLead">بعد الضغط على «إرسال الطلب» ستفتح رسالة واتساب جاهزة بكل التفاصيل.</p>
+          <div class="selected-preview">
+            <img id="orderImage" src="assets/complete.webp" alt="البكج المختار">
+            <div><small data-i18n="yourChoice">اختيارك</small><strong id="orderPackageName">بكج بلازما الكامل</strong><span id="orderPackagePrice">30 د.أ</span></div>
+          </div>
+          <div class="total-row"><span data-i18n="delivery">التوصيل</span><strong>3 <span data-i18n="jod">د.أ</span></strong></div>
+          <div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="orderTotal">33 د.أ</strong></div>
+        </div>
+        <form id="orderForm" novalidate>
+          <div class="field full"><label for="package" data-i18n="selectPackage">اختاري البكج</label><select id="package" name="package" required><option value="complete" data-i18n="completeOption">البكج الرباعي — 30 د.أ</option><option value="duo" data-i18n="duoOption">البكج الثنائي — 20 د.أ</option></select></div>
+          <div class="field"><label for="name" data-i18n="fullName">الاسم الكامل</label><input id="name" name="name" autocomplete="name" required data-placeholder-ar="مثال: سارة أحمد" data-placeholder-en="Example: Sara Ahmad" placeholder="مثال: سارة أحمد"></div>
+          <div class="field"><label for="phone" data-i18n="phone">رقم الهاتف</label><input id="phone" name="phone" inputmode="tel" autocomplete="tel" required placeholder="07XXXXXXXX"></div>
+          <div class="field"><label for="governorate" data-i18n="governorate">المحافظة</label><select id="governorate" name="governorate" required><option value="" data-i18n="choose">اختاري</option><option>عمّان</option><option>الزرقاء</option><option>إربد</option><option>البلقاء</option><option>مادبا</option><option>جرش</option><option>عجلون</option><option>المفرق</option><option>الكرك</option><option>الطفيلة</option><option>معان</option><option>العقبة</option></select></div>
+          <div class="field"><label for="area" data-i18n="area">المنطقة والعنوان</label><input id="area" name="area" required data-placeholder-ar="المنطقة، الشارع، أقرب نقطة" data-placeholder-en="Area, street, nearest landmark" placeholder="المنطقة، الشارع، أقرب نقطة"></div>
+          <div class="field"><label for="quantity" data-i18n="quantity">الكمية</label><div class="quantity"><button type="button" data-qty="minus" aria-label="تقليل الكمية">−</button><input id="quantity" name="quantity" type="number" min="1" max="10" value="1" readonly><button type="button" data-qty="plus" aria-label="زيادة الكمية">＋</button></div></div>
+          <div class="field full"><label for="notes" data-i18n="notes">ملاحظات <small data-i18n="optional">(اختياري)</small></label><textarea id="notes" name="notes" rows="3" data-placeholder-ar="أي تفاصيل إضافية للطلب" data-placeholder-en="Any extra order details" placeholder="أي تفاصيل إضافية للطلب"></textarea></div>
+          <label class="confirm full"><input id="confirm" type="checkbox" required><span data-i18n="confirmOrder">تأكدت من معلومات الطلب وأرغب بإرساله عبر واتساب.</span></label>
+          <button class="whatsapp-btn full" type="submit"><span class="wa-icon">◉</span><span data-i18n="sendWhatsapp">إرسال الطلب عبر واتساب</span><span>←</span></button>
+          <p class="form-error full" id="formError" role="alert"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#top"><span class="brand-mark">P</span><span><strong>PLASMA</strong><small>by BETOLLA</small></span></a>
+    <p data-i18n="footerText">جمال • أمان • ثقة</p>
+    <div class="socials"><a href="https://www.facebook.com/BetollaCosmetics" target="_blank" rel="noopener">Facebook</a><a href="https://www.instagram.com/betolla_jo/" target="_blank" rel="noopener">Instagram</a><a href="https://wa.me/962798153370" target="_blank" rel="noopener">WhatsApp</a></div>
+  </footer>
+
+  <a class="floating-order" href="#order"><span>◉</span><b data-i18n="orderNow">اطلبي الآن</b></a>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
