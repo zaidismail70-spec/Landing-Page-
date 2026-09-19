@@ -26,11 +26,54 @@ $("#langToggle").addEventListener("click",()=>setLanguage(lang==="ar"?"en":"ar")
 $$('.product-tab').forEach(b=>b.addEventListener('click',()=>renderProduct(b.dataset.product)));
 $$('.detail-toggle').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('open');b.nextElementSibling.classList.toggle('open')}));
 $$('[data-plan]').forEach(b=>b.addEventListener('click',()=>renderPlan(b.dataset.plan)));
-$$('.choose-package').forEach(b=>b.addEventListener('click',()=>{$("#package").value=b.dataset.value;updateOrder();$("#routine").scrollIntoView({behavior:"smooth"});renderPlan(b.dataset.value);setTimeout(()=>showToast(lang==="ar"?"جهزنا لكِ برنامج البكج — يمكنك إكمال الطلب بالأسفل":"Your set plan is ready — complete the order below"),500)}));
+$$('.choose-package').forEach(b=>b.addEventListener('click',()=>{$("#package").value=b.dataset.value;updateOrder();$("#order").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});renderPlan(b.dataset.value);setTimeout(()=>showToast(lang==="ar"?"تم اختيار البكج — كمّلي بيانات التوصيل":"Set selected — enter your delivery details"),500)}));
 $$('[data-scroll]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.scroll).scrollIntoView({behavior:'smooth'})));
 $("#package").addEventListener("change",updateOrder);$$('[data-qty]').forEach(b=>b.addEventListener('click',()=>{const q=$("#quantity");q.value=Math.max(1,Math.min(10,+q.value+(b.dataset.qty==="plus"?1:-1)));updateOrder()}));
 function showToast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
-$("#orderForm").addEventListener("submit",e=>{e.preventDefault();const f=e.currentTarget,err=$("#formError");if(!f.checkValidity()){err.textContent=lang==="ar"?"رجاءً كمّلي الحقول المطلوبة وأكدي الطلب.":"Please complete the required fields and confirm your order.";f.reportValidity();return}err.textContent="";const d=new FormData(f),type=d.get("package"),qty=+d.get("quantity"),unit=type==="complete"?30:20,total=unit*qty+3,packAr=type==="complete"?"بكج بلازما الرباعي":"بكج بلازما الثنائي";const message=`طلب جديد من صفحة PLASMA%0A%0A👤 الاسم: ${encodeURIComponent(d.get("name"))}%0A📱 الهاتف: ${encodeURIComponent(d.get("phone"))}%0A📦 البكج: ${encodeURIComponent(packAr)}%0A🔢 الكمية: ${qty}%0A📍 المحافظة: ${encodeURIComponent(d.get("governorate"))}%0A🏠 العنوان: ${encodeURIComponent(d.get("area"))}%0A📝 ملاحظات: ${encodeURIComponent(d.get("notes")||"لا يوجد")}%0A%0A💰 سعر المنتجات: ${unit*qty} د.أ%0A🚚 التوصيل: 3 د.أ%0A✅ الإجمالي: ${total} د.أ%0A💵 الدفع عند الاستلام`;window.open(`https://wa.me/962798153370?text=${message}`,"_blank","noopener")});
+function buildOrderMessage(d) {
+  const complete = d.get("package") === "complete";
+  const qty = Number(d.get("quantity"));
+  const unit = complete ? 30 : 20;
+  const clean = key => String(d.get(key) || "").trim();
+  return [
+    "*طلب جديد | BETOLLA PLASMA*",
+    "",
+    "*بيانات العميل*",
+    "الاسم: " + clean("name"),
+    "الهاتف: " + clean("phone"),
+    "",
+    "*تفاصيل الطلب*",
+    "البكج: " + (complete ? "بكج بلازما الرباعي" : "بكج بلازما الثنائي"),
+    "المحتويات: " + (complete ? "شامبو + بلسم + ماسك + سيروم" : "شامبو + بلسم"),
+    "الكمية: " + qty,
+    "سعر البكج بعد الخصم: " + unit + " د.أ",
+    "",
+    "*عنوان التوصيل*",
+    "المحافظة: " + clean("governorate"),
+    "العنوان: " + clean("area"),
+    "ملاحظات: " + (clean("notes") || "لا يوجد"),
+    "",
+    "*ملخص الحساب*",
+    "مجموع المنتجات: " + (unit * qty) + " د.أ",
+    "رسوم التوصيل: 3 د.أ",
+    "*الإجمالي: " + (unit * qty + 3) + " د.أ*",
+    "طريقة الدفع: نقداً عند الاستلام",
+    "",
+    "يرجى تأكيد الطلب وموعد التوصيل. شكراً لكم."
+  ].join("\n");
+}
+$("#orderForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.currentTarget, err = $("#formError");
+  if (!f.checkValidity()) {
+    err.textContent = lang === "ar" ? "رجاءً كمّلي الحقول المطلوبة وأكدي الطلب." : "Please complete the required fields and confirm your order.";
+    f.reportValidity();
+    return;
+  }
+  err.textContent = "";
+  const message = buildOrderMessage(new FormData(f));
+  window.open("https://wa.me/962798153370?text=" + encodeURIComponent(message), "_blank", "noopener");
+});
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.12});$$('.reveal').forEach(e=>observer.observe(e));
 addEventListener('scroll',()=>{const h=document.documentElement;$("#progress").style.width=`${h.scrollTop/(h.scrollHeight-h.clientHeight)*100}%`},{passive:true});
 renderProduct("shampoo");renderPlan("complete");updateOrder();
