@@ -23,7 +23,7 @@
 <link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23533F16'/%3E%3Cpath d='M20 48V16h14c9 0 15 5 15 13S43 42 34 42h-7v6h-7zm7-13h7c5 0 8-2 8-6s-3-6-8-6h-7v12z' fill='%239E8959'/%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
 <link href="assets/logo.png" rel="apple-touch-icon"/>
 <link href="styles.css" rel="stylesheet"/>
-<link as="image" fetchpriority="high" href="assets/complete.webp" rel="preload"/>
+<link as="image" fetchpriority="high" href="assets/plasma-complete-1080.webp" rel="preload"/>
 </head>
 <body>
 <div aria-hidden="true" class="progress" id="progress"></div>
@@ -71,7 +71,7 @@
 <div aria-label="بكج بلازما الكامل" class="hero-visual reveal pointer-surface">
 <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
 <div class="glow"></div>
-<img alt="بكج بلازما الكامل من أربع قطع" fetchpriority="high" height="1080" id="heroSetImage" src="assets/complete.webp" width="1080"/>
+<img alt="بكج بلازما الكامل من أربع قطع" fetchpriority="high" height="1254" id="heroSetImage" src="assets/plasma-complete-1080.webp" width="1254"/>
 <div class="float-card card-price"><small data-i18n="completeSet">البكج الكامل</small><strong>30 <span data-i18n="jod">د.أ</span></strong><del>40 <span data-i18n="jod">د.أ</span></del></div>
 <div class="float-card card-count"><strong>4</strong><small data-i18n="steps">خطوات متكاملة</small></div>
 </div>
@@ -84,7 +84,7 @@
 <div class="package-grid">
 <article class="package-card featured reveal" data-package="complete">
 <div class="badge" data-i18n="bestValue">الأكثر توفيرًا</div>
-<div class="package-image"><img alt="بكج بلازما الكامل" height="1080" src="assets/complete-transparent.webp" width="1080"/></div>
+<div class="package-image"><img alt="بكج بلازما الكامل بخلفية طبيعية" data-alt-ar="بكج بلازما الكامل بخلفية طبيعية" data-alt-en="PLASMA Complete Set in a natural setting" height="1254" src="assets/plasma-complete-1080.webp" width="1254"/></div>
 <div class="package-copy">
 <small>PLASMA COMPLETE</small>
 <h3 data-i18n="completeTitle">بكج العناية الكاملة</h3>
@@ -98,7 +98,7 @@
 </div>
 </article>
 <article class="package-card reveal" data-package="duo">
-<div class="package-image"><img alt="بكج بلازما الثنائي" height="1080" loading="lazy" src="assets/duo-transparent.webp" width="1080"/></div>
+<div class="package-image"><img alt="بكج بلازما الثنائي بخلفية طبيعية" data-alt-ar="بكج بلازما الثنائي بخلفية طبيعية" data-alt-en="PLASMA Duo Set in a natural setting" height="1254" loading="lazy" src="assets/plasma-duo-1080.webp" width="1254"/></div>
 <div class="package-copy">
 <small>PLASMA DUO</small>
 <h3 data-i18n="duoTitle">بكج العناية اليومية</h3>
@@ -110,7 +110,14 @@
 </article>
 </div>
 <p class="delivery-note reveal"><span>🚚</span><span data-i18n="deliveryNote">التوصيل 3 دنانير لجميع محافظات الأردن — الدفع عند الاستلام</span></p>
-</section></details><details class="explore-panel" id="panel-products"><summary><span data-i18n="productsInfo">المنتجات والمكونات</span></summary><section class="products section" id="products">
+</section></details><section class="shop-singles section" id="shop-singles">
+<div class="section-heading centered reveal">
+<span class="eyebrow" data-i18n="singlesEyebrow">تسوّقي بحرية</span>
+<h2 data-i18n="singlesTitle">اختاري عنايتك بطريقتك</h2>
+<p data-i18n="singlesLead">تسوّقي كل منتج منفردًا أو اختاري البكج الأنسب لروتينك.</p>
+</div>
+<div class="singles-grid" id="singlesGrid"></div>
+</section><details class="explore-panel" id="panel-products"><summary><span data-i18n="productsInfo">المنتجات والمكونات</span></summary><section class="products section" id="products">
 <div class="section-heading centered reveal">
 <span class="eyebrow" data-i18n="insideBottle">داخل كل عبوة</span>
 <h2 data-i18n="productsTitle">اعرفي كل خطوة في روتينك</h2>
@@ -160,20 +167,15 @@
 <span class="eyebrow" data-i18n="easyOrder">طلبك بخطوات بسيطة</span>
 <h2 data-i18n="orderTitle">اختاري، أكّدي، وكمّلي طلبك على واتساب</h2>
 <p data-i18n="orderLead">بعد الضغط على «إرسال الطلب» ستفتح رسالة واتساب جاهزة بكل التفاصيل.</p>
-<div class="selected-preview">
-<img alt="البكج المختار" height="1080" id="orderImage" src="assets/complete.webp" width="1080"/>
-<div><small data-i18n="yourChoice">اختيارك</small><strong id="orderPackageName">بكج بلازما الكامل</strong><span id="orderPackagePrice">30 د.أ</span></div>
-</div>
+<div class="order-cart-list" id="orderCartList"></div>
 <div class="total-row"><span data-i18n="delivery">التوصيل</span><strong>3 <span data-i18n="jod">د.أ</span></strong></div>
-<div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="orderTotal">33 د.أ</strong></div>
+<div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="orderTotal">0 د.أ</strong></div>
 </div>
 <form id="orderForm" novalidate="">
-<div class="field full"><label data-i18n="selectPackage" for="package">اختاري البكج</label><select id="package" name="package" required=""><option data-i18n="completeOption" value="complete">البكج الرباعي — 30 د.أ</option><option data-i18n="duoOption" value="duo">البكج الثنائي — 20 د.أ</option></select></div>
 <div class="field"><label data-i18n="fullName" for="name">الاسم الكامل</label><input autocomplete="name" data-placeholder-ar="مثال: سارة أحمد" data-placeholder-en="Example: Sara Ahmad" id="name" name="name" placeholder="مثال: سارة أحمد" required=""/></div>
 <div class="field"><label data-i18n="phone" for="phone">رقم الهاتف</label><input autocomplete="tel" id="phone" inputmode="tel" name="phone" pattern="[0-9+\-\s]{7,15}" placeholder="07XXXXXXXX" required="" title="أدخلي رقم هاتف صحيح، مثال: 07XXXXXXXX" type="tel"/></div>
 <div class="field"><label data-i18n="governorate" for="governorate">المحافظة</label><select id="governorate" name="governorate" required=""><option data-i18n="choose" value="">اختاري</option><option>عمّان</option><option>الزرقاء</option><option>إربد</option><option>البلقاء</option><option>مادبا</option><option>جرش</option><option>عجلون</option><option>المفرق</option><option>الكرك</option><option>الطفيلة</option><option>معان</option><option>العقبة</option></select></div>
 <div class="field"><label data-i18n="area" for="area">المنطقة والعنوان</label><input data-placeholder-ar="المنطقة، الشارع، أقرب نقطة" data-placeholder-en="Area, street, nearest landmark" id="area" name="area" placeholder="المنطقة، الشارع، أقرب نقطة" required=""/></div>
-<div class="field"><label data-i18n="quantity" for="quantity">الكمية</label><div class="quantity"><button aria-label="تقليل الكمية" data-qty="minus" type="button">−</button><input id="quantity" inputmode="numeric" max="10" min="1" name="quantity" required="" type="number" value="1"/><button aria-label="زيادة الكمية" data-qty="plus" type="button">＋</button></div></div>
 <div class="field full"><label data-i18n="notes" for="notes">ملاحظات <small data-i18n="optional">(اختياري)</small></label><textarea data-placeholder-ar="أي تفاصيل إضافية للطلب" data-placeholder-en="Any extra order details" id="notes" name="notes" placeholder="أي تفاصيل إضافية للطلب" rows="3"></textarea></div>
 <label class="confirm full"><input id="confirm" required="" type="checkbox"/><span data-i18n="confirmOrder">تأكدت من معلومات الطلب وأرغب بإرساله عبر واتساب.</span></label>
 <button class="whatsapp-btn full" type="submit"><span class="wa-icon">◉</span><span data-i18n="sendWhatsapp">إرسال الطلب عبر واتساب</span><span>←</span></button>
@@ -194,6 +196,22 @@
 </footer>
 <a class="floating-order" href="#order"><span>◉</span><b data-i18n="orderNow">اطلبي الآن</b></a>
 <div class="toast" id="toast" role="status"></div>
+<button aria-label="فتح السلة" class="cart-fab" hidden="" id="cartToggle" type="button"><span class="cart-fab-icon" aria-hidden="true">🛍</span><span class="cart-fab-count" id="cartCount">0</span></button>
+<div class="cart-drawer" hidden="" id="cartDrawer">
+<div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+<div aria-labelledby="cartDrawerTitle" aria-modal="true" class="cart-drawer-panel" role="dialog">
+<div class="cart-drawer-head">
+<h2 data-i18n="cartTitle" id="cartDrawerTitle">سلة طلبك</h2>
+<button aria-label="إغلاق السلة" class="cart-drawer-close" id="cartClose" type="button">✕</button>
+</div>
+<div class="cart-drawer-items" id="cartItems"></div>
+<div class="cart-drawer-footer">
+<div class="total-row"><span data-i18n="delivery">التوصيل</span><strong id="cartDeliveryRow">3 د.أ</strong></div>
+<div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="cartDrawerTotal">0 د.أ</strong></div>
+<a class="primary-btn cart-checkout" href="#order" id="cartCheckout"><span data-i18n="cartCheckout">إكمال الطلب</span></a>
+</div>
+</div>
+</div>
 <script type="application/ld+json">[
   {
     "@context": "https://schema.org",
