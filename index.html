@@ -20,8 +20,10 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23533F16'/%3E%3Cpath d='M20 48V16h14c9 0 15 5 15 13S43 42 34 42h-7v6h-7zm7-13h7c5 0 8-2 8-6s-3-6-8-6h-7v12z' fill='%239E8959'/%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
-<link href="assets/logo.png" rel="apple-touch-icon"/>
+<link href="assets/favicon.ico" rel="icon" sizes="any"/>
+<link href="assets/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="assets/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+<link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/>
 <link href="styles.css" rel="stylesheet"/>
 <link as="image" fetchpriority="high" href="assets/plasma-complete-1080.webp" rel="preload"/>
 </head>
@@ -40,7 +42,7 @@
 </a>
 <nav aria-label="التنقل الرئيسي">
 <a data-i18n="navPackages" href="#packages">البكجات</a>
-<a data-i18n="navProducts" href="#products">المنتجات</a>
+<a data-i18n="navProducts" href="#shop-singles">المنتجات</a>
 <a data-i18n="navRoutine" href="#routine">برنامجك</a>
 </nav>
 <div class="nav-actions">
@@ -53,7 +55,7 @@
 <div class="mobile-nav" id="mobileNav">
 <nav aria-label="التنقل الرئيسي (جوال)" class="mobile-nav-links">
 <a data-i18n="navPackages" href="#packages">البكجات</a>
-<a data-i18n="navProducts" href="#products">المنتجات</a>
+<a data-i18n="navProducts" href="#shop-singles">المنتجات</a>
 <a data-i18n="navRoutine" href="#routine">برنامجك</a>
 <a class="primary-btn mobile-nav-cta" data-i18n="orderNow" href="#order">اطلبي الآن</a>
 </nav>
@@ -83,14 +85,14 @@
 <div class="float-card card-count"><strong>4</strong><small data-i18n="steps">خطوات متكاملة</small></div>
 </div>
 <a aria-label="انتقل للبكجات" class="scroll-cue" href="#packages"><span></span></a>
-</section><section class="shop-singles section" id="shop-singles">
+</section><details class="explore-panel" id="panel-singles"><summary><span data-i18n="singlesSummary">تسوّقي بحرية — عنايتك بطريقتك</span></summary><section class="shop-singles section" id="shop-singles">
 <div class="section-heading centered reveal">
 <span class="eyebrow" data-i18n="singlesEyebrow">تسوّقي بحرية</span>
 <h2 data-i18n="singlesTitle">اختاري عنايتك بطريقتك</h2>
 <p data-i18n="singlesLead">تسوّقي كل منتج منفردًا أو اختاري البكج الأنسب لروتينك.</p>
 </div>
 <div class="singles-grid" id="singlesGrid"></div>
-</section><section class="order section" id="order">
+</section></details><section class="order section" id="order">
 <div class="order-shell reveal">
 <div class="order-summary">
 <span class="eyebrow" data-i18n="easyOrder">طلبك بخطوات بسيطة</span>
