@@ -139,24 +139,62 @@ function renderCart(){
     if(label)label.textContent=item?`${content[lang].addToOrder} (${item.qty})`:content[lang].addToOrder;
   });
 }
-function openCartDrawer(){const d=$("#cartDrawer");if(!d)return;d.hidden=false;requestAnimationFrame(()=>d.classList.add("open"));document.body.classList.add("no-scroll");}
-function closeCartDrawer(){const d=$("#cartDrawer");if(!d)return;d.classList.remove("open");document.body.classList.remove("no-scroll");setTimeout(()=>{if(!d.classList.contains("open"))d.hidden=true;},320);}
+let cartLastTrigger=null;
+function openCartDrawer(){const d=$("#cartDrawer");if(!d)return;cartLastTrigger=document.activeElement;d.hidden=false;requestAnimationFrame(()=>{d.classList.add("open");const closeBtn=$("#cartClose");if(closeBtn)closeBtn.focus();});document.body.classList.add("no-scroll");}
+function closeCartDrawer(){const d=$("#cartDrawer");if(!d)return;d.classList.remove("open");document.body.classList.remove("no-scroll");setTimeout(()=>{if(!d.classList.contains("open"))d.hidden=true;},320);if(cartLastTrigger&&typeof cartLastTrigger.focus==="function")cartLastTrigger.focus();}
+const singleQty={shampoo:1,conditioner:1,mask:1,serum:1};
 function renderSingles(){
   const keys=["shampoo","conditioner","mask","serum"];
   const grid=$("#singlesGrid");
   if(!grid)return;
+  const qtyLabel=lang==="ar"?"الكمية":"Quantity";
+  const decLabel=lang==="ar"?"تقليل الكمية":"Decrease quantity";
+  const incLabel=lang==="ar"?"زيادة الكمية":"Increase quantity";
   grid.innerHTML=keys.map(key=>{
     const p=products[key][lang];
-    return `<article class="single-card" data-single="${key}"><div class="single-image"><img src="${products[key].image}" alt="${p.name}" width="1080" height="1080" loading="lazy"></div><div class="single-copy"><h3>${p.name}</h3><p>${p.desc}</p><div class="single-price"><strong>${products[key].price}</strong> <span>${content[lang].jod}</span></div><button class="secondary-btn add-single" type="button" data-single="${key}"><span>${content[lang].addToOrder}</span></button></div></article>`;
+    const qty=singleQty[key]||1;
+    return `<article class="single-card img-accent" data-single="${key}"><div class="single-image"><img src="${products[key].image}" alt="${p.name}" width="1080" height="1080" loading="lazy"></div><div class="single-copy"><h3>${p.name}</h3><p>${p.desc}</p><div class="single-price"><strong>${products[key].price}</strong> <span>${content[lang].jod}</span></div><div class="single-qty" role="group" aria-label="${qtyLabel}"><button type="button" data-single-qty="minus" aria-label="${decLabel}">−</button><span class="single-qty-value">${qty}</span><button type="button" data-single-qty="plus" aria-label="${incLabel}">＋</button></div><button class="secondary-btn add-single" type="button"><span>${content[lang].addToOrder}</span></button></div></article>`;
   }).join("");
-  $$('.add-single',grid).forEach(b=>b.addEventListener("click",()=>addToCart("single",b.dataset.single,1)));
 }
+const singlesGridEl=$("#singlesGrid");
+if(singlesGridEl)singlesGridEl.addEventListener("click",e=>{
+  const card=e.target.closest(".single-card");
+  if(!card)return;
+  const key=card.dataset.single;
+  const qtyBtn=e.target.closest("[data-single-qty]");
+  if(qtyBtn){
+    singleQty[key]=Math.max(1,Math.min(20,(singleQty[key]||1)+(qtyBtn.dataset.singleQty==="plus"?1:-1)));
+    const valueEl=card.querySelector(".single-qty-value");
+    if(valueEl)valueEl.textContent=singleQty[key];
+    return;
+  }
+  if(e.target.closest(".add-single")){
+    const qty=singleQty[key]||1;
+    addToCart("single",key,qty);
+    singleQty[key]=1;
+    const valueEl=card.querySelector(".single-qty-value");
+    if(valueEl)valueEl.textContent=1;
+    const name=products[key][lang].name;
+    showToast(lang==="ar"?`أُضيف ${name} إلى السلة`:`${name} added to your cart`);
+  }
+});
 const cartToggleEl=$("#cartToggle"),cartCloseEl=$("#cartClose"),cartBackdropEl=$("#cartBackdrop"),cartItemsEl=$("#cartItems"),cartCheckoutEl=$("#cartCheckout");
 if(cartToggleEl)cartToggleEl.addEventListener("click",openCartDrawer);
 if(cartCloseEl)cartCloseEl.addEventListener("click",closeCartDrawer);
 if(cartBackdropEl)cartBackdropEl.addEventListener("click",closeCartDrawer);
 if(cartCheckoutEl)cartCheckoutEl.addEventListener("click",closeCartDrawer);
-document.addEventListener("keydown",e=>{const d=$("#cartDrawer");if(e.key==="Escape"&&d&&d.classList.contains("open"))closeCartDrawer();});
+document.addEventListener("keydown",e=>{
+  const d=$("#cartDrawer");
+  if(!d||!d.classList.contains("open"))return;
+  if(e.key==="Escape"){closeCartDrawer();return;}
+  if(e.key==="Tab"){
+    const focusable=[...d.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.offsetParent!==null);
+    if(!focusable.length)return;
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
 if(cartItemsEl)cartItemsEl.addEventListener("click",e=>{
   const qtyBtn=e.target.closest("[data-cart-qty]");
   if(qtyBtn){
@@ -192,16 +230,21 @@ $$('.mobile-nav-links a').forEach(a=>a.addEventListener("click",()=>setMobileNav
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&navToggle.getAttribute("aria-expanded")==="true")setMobileNavOpen(false)});
 document.addEventListener("click",e=>{if(navToggle.getAttribute("aria-expanded")==="true"&&!mobileNav.contains(e.target)&&!navToggle.contains(e.target))setMobileNavOpen(false)});
 function showToast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
+const PACKAGE_CONTENTS_AR={complete:"شامبو + بلسم + ماسك + سيروم",duo:"شامبو + بلسم"};
 function buildOrderMessage(cartItems, d) {
   const clean = key => String(d.get(key) || "").trim();
   const totals = cartTotals();
-  const lines = cartItems.map(it => {
+  const lines = [];
+  cartItems.forEach(it => {
     const name = it.kind === "package" ? PACKAGE_META[it.key].ar.name : products[it.key].ar.name;
-    const price = cartUnitPrice(it.kind, it.key) * it.qty;
-    return "• " + name + " × " + it.qty + " — " + price + " د.أ";
+    const unit = cartUnitPrice(it.kind, it.key);
+    const lineTotal = unit * it.qty;
+    lines.push("• " + name + " × " + it.qty);
+    if (it.kind === "package") lines.push("  المحتويات: " + PACKAGE_CONTENTS_AR[it.key]);
+    lines.push("  سعر الوحدة: " + unit + " د.أ — الإجمالي: " + lineTotal + " د.أ");
   });
   return [
-    "*طلب جديد | BETOLLA PLASMA*",
+    "*طلب جديد من صفحة PLASMA*",
     "",
     "*بيانات العميل*",
     "الاسم: " + clean("name"),
@@ -219,7 +262,7 @@ function buildOrderMessage(cartItems, d) {
     "مجموع المنتجات: " + totals.subtotal + " د.أ",
     "رسوم التوصيل: " + totals.delivery + " د.أ",
     "*الإجمالي: " + totals.total + " د.أ*",
-    "طريقة الدفع: نقداً عند الاستلام",
+    "طريقة الدفع: الدفع عند الاستلام",
     "",
     "يرجى تأكيد الطلب وموعد التوصيل. شكراً لكم."
   ].join("\n");
@@ -277,10 +320,22 @@ document.addEventListener('pointermove',e=>{
 document.addEventListener('pointerleave',()=>halo.classList.remove('active'));
 function resetSurface(el){el.style.removeProperty('--shift-x');el.style.removeProperty('--shift-y');el.style.removeProperty('--pointer-x');el.style.removeProperty('--pointer-y')}
 $$('.pointer-surface').forEach(el=>{
- el.addEventListener('pointermove',e=>{if(!motionQuery.matches)return;const r=el.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;el.style.setProperty('--pointer-x',x+'px');el.style.setProperty('--pointer-y',y+'px');el.style.setProperty('--shift-x',((x/r.width-.5)*10)+'px');el.style.setProperty('--shift-y',((y/r.height-.5)*10)+'px')},{passive:true});
+ el.addEventListener('pointermove',e=>{if(!motionQuery.matches)return;const r=el.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;el.style.setProperty('--pointer-x',x+'px');el.style.setProperty('--pointer-y',y+'px');el.style.setProperty('--shift-x',((x/r.width-.5)*20)+'px');el.style.setProperty('--shift-y',((y/r.height-.5)*20)+'px')},{passive:true});
  el.addEventListener('pointerleave',()=>resetSurface(el));
 });
 motionQuery.addEventListener('change',()=>{halo.classList.remove('active');$$('.pointer-surface').forEach(resetSurface)});
+const bgAtmosphere=$('.bg-atmosphere');
+let bgFrame=0;
+document.addEventListener('pointermove',e=>{
+ if(!motionQuery.matches||e.pointerType==='touch'||!bgAtmosphere)return;
+ cancelAnimationFrame(bgFrame);
+ bgFrame=requestAnimationFrame(()=>{
+  const x=(e.clientX/window.innerWidth-.5)*14;
+  const y=(e.clientY/window.innerHeight-.5)*14;
+  bgAtmosphere.style.transform=`translate3d(${x}px,${y}px,0)`;
+ });
+},{passive:true});
+document.addEventListener('visibilitychange',()=>{document.body.classList.toggle('tab-hidden',document.hidden)});
 // Keyboard operation for the existing product tab interface.
 $$('.product-tab').forEach((b,i)=>b.addEventListener('keydown',e=>{const tabs=$$('.product-tab');let n=i;if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else if(e.key==='ArrowRight')n=(i+(lang==='ar'?-1:1)+tabs.length)%tabs.length;else if(e.key==='ArrowLeft')n=(i+(lang==='ar'?1:-1)+tabs.length)%tabs.length;else return;e.preventDefault();tabs[n].focus();tabs[n].click()}));
 setLanguage(lang,{skipUrlUpdate:true});
