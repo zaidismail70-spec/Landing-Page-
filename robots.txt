@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap intentionally omitted: add one once the production domain is
+# finalized, e.g. Sitemap: https://your-production-domain/sitemap.xml
