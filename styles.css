@@ -359,7 +359,7 @@ footer{width:min(1400px,100%);margin-inline:auto;padding:35px 28px 105px;border-
    ========================================================= */
 html[dir="ltr"] body{font-family:"Manrope",sans-serif}
 html[dir="ltr"] .eyebrow:before{order:-1}
-html[dir="ltr"] .primary-btn span:last-child,html[dir="ltr"] .secondary-btn span:last-child,html[dir="ltr"] .whatsapp-btn span:last-child{transform:rotate(180deg)}
+html[dir="ltr"] .primary-btn span:last-child:not(:only-child),html[dir="ltr"] .secondary-btn span:last-child:not(:only-child),html[dir="ltr"] .whatsapp-btn span:last-child:not(:only-child){transform:rotate(180deg)}
 
 /* =========================================================
    Responsive
