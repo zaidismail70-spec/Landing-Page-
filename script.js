@@ -39,6 +39,7 @@ function setLanguage(next,options){
   $("#langToggle").textContent=lang==="ar"?"EN":"ع";
   $$('[data-i18n]').forEach(el=>{const v=content[lang][el.dataset.i18n];if(v!==undefined)el.innerHTML=v});
   $$('[data-placeholder-ar]').forEach(el=>el.placeholder=el.dataset[lang==="ar"?"placeholderAr":"placeholderEn"]);
+  $$('[data-alt-ar]').forEach(el=>el.alt=el.dataset[lang==="ar"?"altAr":"altEn"]);
   document.title=content[lang].pageTitle;
   const desc=content[lang].metaDescription;
   ["metaDescription","ogTitle","ogDescription","twitterTitle","twitterDescription"].forEach(id=>{
@@ -254,7 +255,7 @@ function syncHero(){
  const type=heroPreviewType;
  $$('[data-select-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.selectSet===type)));
  const name=lang==='ar'?(type==='complete'?'بكج بلازما الرباعي':'بكج بلازما الثنائي'):(type==='complete'?'PLASMA Complete Set':'PLASMA Duo Set');
- $('#heroSetImage').src=type==='complete'?'assets/complete-transparent.webp':'assets/duo-transparent.webp';
+ $('#heroSetImage').src=type==='complete'?'assets/plasma-complete-1080.webp':'assets/plasma-duo-1080.webp';
  $('#heroSetImage').alt=name;$('.hero-visual').setAttribute('aria-label',name);
  $('.card-price strong').textContent=(type==='complete'?30:20)+' '+content[lang].jod;
  $('.card-price del').textContent=(type==='complete'?40:25)+' '+content[lang].jod;

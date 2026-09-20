@@ -108,9 +108,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .trust-row{display:flex;flex-wrap:wrap;gap:18px;color:var(--color-text-muted);font-size:13px}
 .trust-row span{display:flex;align-items:center;gap:7px}
 .trust-row b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-tint);color:var(--color-ink)}
-.hero-visual{position:relative;display:grid;place-items:center;isolation:isolate;min-height:clamp(320px,34vw,440px);padding:clamp(20px,3vw,36px);border-radius:32px;background:radial-gradient(120% 120% at 50% 28%,#fffdf7 0%,#f8eed8 48%,#eeddb8 100%);box-shadow:0 22px 55px rgba(83,63,22,.1)}
-.hero-visual:before{content:"";position:absolute;width:60%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(198,157,66,.4);background:radial-gradient(circle,rgba(229,208,161,.4),transparent 72%);z-index:0}
-.hero-visual img{position:relative;z-index:1;width:auto;height:clamp(230px,28vw,380px);max-width:80%;object-fit:contain;filter:drop-shadow(0 22px 20px rgba(83,63,22,.22));animation:float 5s ease-in-out infinite}
+.hero-visual{position:relative;isolation:isolate;min-height:clamp(320px,34vw,440px);border-radius:32px;overflow:hidden;background:#f0e9da;box-shadow:0 22px 55px rgba(83,63,22,.1)}
+.hero-visual:before{display:none}
+.hero-visual img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 38%}
 .glow{position:absolute;width:40%;height:40%;background:rgba(229,208,161,.5);filter:blur(55px);border-radius:50%;z-index:0}
 .orbit{position:absolute;border:1px solid rgba(198,157,66,.3);border-radius:50%;animation:spin 18s linear infinite;z-index:0}
 .orbit-a{width:74%;aspect-ratio:1}
@@ -149,13 +149,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    Packages
    ========================================================= */
 .package-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
-.package-card,.package-card:not(.featured){position:relative;display:grid;grid-template-columns:1fr;grid-template-rows:290px 1fr;overflow:hidden;border:1px solid var(--color-border);border-radius:var(--radius-md);background:#fff;min-height:0;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard)}
+.package-card,.package-card:not(.featured){position:relative;display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:hidden;border:1px solid var(--color-border);border-radius:var(--radius-md);background:#fff;min-height:0;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard)}
 .package-card.featured{border:2px solid var(--color-accent)}
 .package-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-card-hover)}
-.package-image{display:grid;place-items:center;background:radial-gradient(ellipse at center,#f1e7cf,#fffcf6 70%);position:relative;overflow:hidden}
-.package-image:after{content:"";position:absolute;width:65%;aspect-ratio:1;border:1px solid rgba(198,157,66,.4);border-radius:50%}
-.package-image img,.package-card:not(.featured) .package-image img{position:relative;z-index:1;width:88%;height:265px;max-height:265px;object-fit:contain;transition:transform .5s}
-.package-card:hover .package-image img{transform:scale(1.04) rotate(-1deg)}
+.package-image{aspect-ratio:1;display:block;background:#f0e9da;position:relative;overflow:hidden}
+.package-image img,.package-card:not(.featured) .package-image img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s}
+.package-card:hover .package-image img{transform:scale(1.04)}
 .package-copy{padding:28px 32px;display:flex;flex-direction:column;align-items:flex-start}
 .package-copy>small{font:700 11px "Manrope";letter-spacing:.16em;color:var(--color-ink)}
 .package-copy h3{font-size:26px;margin:8px 0 12px}
@@ -373,7 +372,7 @@ html[dir="ltr"] .primary-btn span:last-child,html[dir="ltr"] .secondary-btn span
   .hero-actions{flex-direction:column;gap:16px;margin-block:24px}
   .hero-actions .primary-btn{width:100%}
   .trust-row{gap:10px}
-  .hero-visual{min-height:280px;padding:16px}
+  .hero-visual{min-height:280px}
   .float-card{padding:9px 12px}
   .card-price{inset-inline-end:8px;inset-block-end:10px}
   .card-count{inset-inline-start:8px;inset-block-start:10px}
@@ -384,8 +383,6 @@ html[dir="ltr"] .primary-btn span:last-child,html[dir="ltr"] .secondary-btn span
   .promise p{margin-top:7px}
   .section-heading h2{font-size:30px}
   .package-grid{grid-template-columns:1fr;gap:20px}
-  .package-card,.package-card:not(.featured){grid-template-rows:245px 1fr}
-  .package-image img,.package-card:not(.featured) .package-image img{height:225px}
   .package-copy{padding:28px}
   .product-tabs{grid-template-columns:repeat(2,1fr)}
   .product-tab:nth-child(3),.product-tab:nth-child(4){border-top:1px solid var(--color-border)}
