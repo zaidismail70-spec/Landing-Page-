@@ -20,12 +20,21 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23533F16'/%3E%3Cpath d='M20 48V16h14c9 0 15 5 15 13S43 42 34 42h-7v6h-7zm7-13h7c5 0 8-2 8-6s-3-6-8-6h-7v12z' fill='%239E8959'/%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
-<link href="assets/logo.png" rel="apple-touch-icon"/>
+<link href="assets/favicon.ico" rel="icon" sizes="any"/>
+<link href="assets/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="assets/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+<link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/>
 <link href="styles.css" rel="stylesheet"/>
 <link as="image" fetchpriority="high" href="assets/plasma-complete-1080.webp" rel="preload"/>
 </head>
 <body>
+<div aria-hidden="true" class="bg-atmosphere">
+<span class="bg-orb bg-orb-a"></span>
+<span class="bg-orb bg-orb-b"></span>
+<span class="bg-ring bg-ring-a"></span>
+<span class="bg-blob"></span>
+<span class="bg-sheen"></span>
+</div>
 <div aria-hidden="true" class="progress" id="progress"></div>
 <header class="nav" id="top">
 <a aria-label="Betolla Plasma home" class="brand" href="#top">
@@ -33,7 +42,7 @@
 </a>
 <nav aria-label="التنقل الرئيسي">
 <a data-i18n="navPackages" href="#packages">البكجات</a>
-<a data-i18n="navProducts" href="#products">المنتجات</a>
+<a data-i18n="navProducts" href="#shop-singles">المنتجات</a>
 <a data-i18n="navRoutine" href="#routine">برنامجك</a>
 </nav>
 <div class="nav-actions">
@@ -46,7 +55,7 @@
 <div class="mobile-nav" id="mobileNav">
 <nav aria-label="التنقل الرئيسي (جوال)" class="mobile-nav-links">
 <a data-i18n="navPackages" href="#packages">البكجات</a>
-<a data-i18n="navProducts" href="#products">المنتجات</a>
+<a data-i18n="navProducts" href="#shop-singles">المنتجات</a>
 <a data-i18n="navRoutine" href="#routine">برنامجك</a>
 <a class="primary-btn mobile-nav-cta" data-i18n="orderNow" href="#order">اطلبي الآن</a>
 </nav>
@@ -76,13 +85,41 @@
 <div class="float-card card-count"><strong>4</strong><small data-i18n="steps">خطوات متكاملة</small></div>
 </div>
 <a aria-label="انتقل للبكجات" class="scroll-cue" href="#packages"><span></span></a>
+</section><details class="explore-panel" id="panel-singles"><summary><span data-i18n="singlesSummary">تسوّقي بحرية — عنايتك بطريقتك</span></summary><section class="shop-singles section" id="shop-singles">
+<div class="section-heading centered reveal">
+<span class="eyebrow" data-i18n="singlesEyebrow">تسوّقي بحرية</span>
+<h2 data-i18n="singlesTitle">اختاري عنايتك بطريقتك</h2>
+<p data-i18n="singlesLead">تسوّقي كل منتج منفردًا أو اختاري البكج الأنسب لروتينك.</p>
+</div>
+<div class="singles-grid" id="singlesGrid"></div>
+</section></details><section class="order section" id="order">
+<div class="order-shell reveal">
+<div class="order-summary">
+<span class="eyebrow" data-i18n="easyOrder">طلبك بخطوات بسيطة</span>
+<h2 data-i18n="orderTitle">اختاري، أكّدي، وكمّلي طلبك على واتساب</h2>
+<p data-i18n="orderLead">بعد الضغط على «إرسال الطلب» ستفتح رسالة واتساب جاهزة بكل التفاصيل.</p>
+<div class="order-cart-list" id="orderCartList"></div>
+<div class="total-row"><span data-i18n="delivery">التوصيل</span><strong>3 <span data-i18n="jod">د.أ</span></strong></div>
+<div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="orderTotal">0 د.أ</strong></div>
+</div>
+<form id="orderForm" novalidate="">
+<div class="field"><label data-i18n="fullName" for="name">الاسم الكامل</label><input autocomplete="name" data-placeholder-ar="مثال: سارة أحمد" data-placeholder-en="Example: Sara Ahmad" id="name" name="name" placeholder="مثال: سارة أحمد" required=""/></div>
+<div class="field"><label data-i18n="phone" for="phone">رقم الهاتف</label><input autocomplete="tel" id="phone" inputmode="tel" name="phone" pattern="[0-9+\-\s]{7,15}" placeholder="07XXXXXXXX" required="" title="أدخلي رقم هاتف صحيح، مثال: 07XXXXXXXX" type="tel"/></div>
+<div class="field"><label data-i18n="governorate" for="governorate">المحافظة</label><select id="governorate" name="governorate" required=""><option data-i18n="choose" value="">اختاري</option><option>عمّان</option><option>الزرقاء</option><option>إربد</option><option>البلقاء</option><option>مادبا</option><option>جرش</option><option>عجلون</option><option>المفرق</option><option>الكرك</option><option>الطفيلة</option><option>معان</option><option>العقبة</option></select></div>
+<div class="field"><label data-i18n="area" for="area">المنطقة والعنوان</label><input data-placeholder-ar="المنطقة، الشارع، أقرب نقطة" data-placeholder-en="Area, street, nearest landmark" id="area" name="area" placeholder="المنطقة، الشارع، أقرب نقطة" required=""/></div>
+<div class="field full"><label data-i18n="notes" for="notes">ملاحظات <small data-i18n="optional">(اختياري)</small></label><textarea data-placeholder-ar="أي تفاصيل إضافية للطلب" data-placeholder-en="Any extra order details" id="notes" name="notes" placeholder="أي تفاصيل إضافية للطلب" rows="3"></textarea></div>
+<label class="confirm full"><input id="confirm" required="" type="checkbox"/><span data-i18n="confirmOrder">تأكدت من معلومات الطلب وأرغب بإرساله عبر واتساب.</span></label>
+<button class="whatsapp-btn full" type="submit"><span aria-hidden="true" class="wa-icon">◉</span><span data-i18n="sendWhatsapp">إرسال الطلب عبر واتساب</span><span aria-hidden="true">←</span></button>
+<p class="form-error full" id="formError" role="alert"></p>
+</form>
+</div>
 </section><details class="explore-panel" id="panel-packages"><summary><span data-i18n="navPackages">البكجات</span></summary><section class="packages section" id="packages">
 <div class="section-heading reveal">
 <span class="eyebrow" data-i18n="chooseRoutine">اختاري روتينك</span>
 <h2 data-i18n="packagesTitle">بكجان، وهدف واحد:<br/>شعر تحبينه كل يوم</h2>
 </div>
 <div class="package-grid">
-<article class="package-card featured reveal" data-package="complete">
+<article class="package-card featured reveal img-accent" data-package="complete">
 <div class="badge" data-i18n="bestValue">الأكثر توفيرًا</div>
 <div class="package-image"><img alt="بكج بلازما الكامل بخلفية طبيعية" data-alt-ar="بكج بلازما الكامل بخلفية طبيعية" data-alt-en="PLASMA Complete Set in a natural setting" height="1254" src="assets/plasma-complete-1080.webp" width="1254"/></div>
 <div class="package-copy">
@@ -94,10 +131,10 @@
 <li data-i18n="mask">ماسك بلازما</li><li data-i18n="serum">سيروم بلازما</li>
 </ul>
 <div class="price"><del>40 <span data-i18n="jod">د.أ</span></del><strong>30 <span data-i18n="jod">د.أ</span></strong></div>
-<button class="primary-btn choose-package" data-value="complete" type="button"><span data-i18n="chooseComplete">اختاري البكج الكامل</span><span>←</span></button>
+<button class="primary-btn choose-package" data-value="complete" type="button"><span data-i18n="chooseComplete">اختاري البكج الكامل</span><span aria-hidden="true">←</span></button>
 </div>
 </article>
-<article class="package-card reveal" data-package="duo">
+<article class="package-card reveal img-accent" data-package="duo">
 <div class="package-image"><img alt="بكج بلازما الثنائي بخلفية طبيعية" data-alt-ar="بكج بلازما الثنائي بخلفية طبيعية" data-alt-en="PLASMA Duo Set in a natural setting" height="1254" loading="lazy" src="assets/plasma-duo-1080.webp" width="1254"/></div>
 <div class="package-copy">
 <small>PLASMA DUO</small>
@@ -105,19 +142,12 @@
 <p data-i18n="duoDesc">خطوتان أساسيتان لنظافة لطيفة وترطيب يساعد على تقليل التشابك.</p>
 <ul><li data-i18n="shampoo">شامبو بلازما</li><li data-i18n="conditioner">بلسم بلازما</li></ul>
 <div class="price"><del>25 <span data-i18n="jod">د.أ</span></del><strong>20 <span data-i18n="jod">د.أ</span></strong></div>
-<button class="secondary-btn choose-package" data-value="duo" type="button"><span data-i18n="chooseDuo">اختاري البكج الثنائي</span><span>←</span></button>
+<button class="secondary-btn choose-package" data-value="duo" type="button"><span data-i18n="chooseDuo">اختاري البكج الثنائي</span><span aria-hidden="true">←</span></button>
 </div>
 </article>
 </div>
 <p class="delivery-note reveal"><span>🚚</span><span data-i18n="deliveryNote">التوصيل 3 دنانير لجميع محافظات الأردن — الدفع عند الاستلام</span></p>
-</section></details><section class="shop-singles section" id="shop-singles">
-<div class="section-heading centered reveal">
-<span class="eyebrow" data-i18n="singlesEyebrow">تسوّقي بحرية</span>
-<h2 data-i18n="singlesTitle">اختاري عنايتك بطريقتك</h2>
-<p data-i18n="singlesLead">تسوّقي كل منتج منفردًا أو اختاري البكج الأنسب لروتينك.</p>
-</div>
-<div class="singles-grid" id="singlesGrid"></div>
-</section><details class="explore-panel" id="panel-products"><summary><span data-i18n="productsInfo">المنتجات والمكونات</span></summary><section class="products section" id="products">
+</section></details><details class="explore-panel" id="panel-products"><summary><span data-i18n="productsInfo">المنتجات والمكونات</span></summary><section class="products section" id="products">
 <div class="section-heading centered reveal">
 <span class="eyebrow" data-i18n="insideBottle">داخل كل عبوة</span>
 <h2 data-i18n="productsTitle">اعرفي كل خطوة في روتينك</h2>
@@ -161,29 +191,7 @@
 </div>
 <div class="routine-board"><div aria-live="polite" class="week" id="weekPlan"></div><a class="primary-btn routine-order" href="#order" id="routineOrder">اطلبي هذا البكج ←</a></div>
 </div>
-</section></details><section class="order section" id="order">
-<div class="order-shell reveal">
-<div class="order-summary">
-<span class="eyebrow" data-i18n="easyOrder">طلبك بخطوات بسيطة</span>
-<h2 data-i18n="orderTitle">اختاري، أكّدي، وكمّلي طلبك على واتساب</h2>
-<p data-i18n="orderLead">بعد الضغط على «إرسال الطلب» ستفتح رسالة واتساب جاهزة بكل التفاصيل.</p>
-<div class="order-cart-list" id="orderCartList"></div>
-<div class="total-row"><span data-i18n="delivery">التوصيل</span><strong>3 <span data-i18n="jod">د.أ</span></strong></div>
-<div class="total-row grand"><span data-i18n="total">الإجمالي</span><strong id="orderTotal">0 د.أ</strong></div>
-</div>
-<form id="orderForm" novalidate="">
-<div class="field"><label data-i18n="fullName" for="name">الاسم الكامل</label><input autocomplete="name" data-placeholder-ar="مثال: سارة أحمد" data-placeholder-en="Example: Sara Ahmad" id="name" name="name" placeholder="مثال: سارة أحمد" required=""/></div>
-<div class="field"><label data-i18n="phone" for="phone">رقم الهاتف</label><input autocomplete="tel" id="phone" inputmode="tel" name="phone" pattern="[0-9+\-\s]{7,15}" placeholder="07XXXXXXXX" required="" title="أدخلي رقم هاتف صحيح، مثال: 07XXXXXXXX" type="tel"/></div>
-<div class="field"><label data-i18n="governorate" for="governorate">المحافظة</label><select id="governorate" name="governorate" required=""><option data-i18n="choose" value="">اختاري</option><option>عمّان</option><option>الزرقاء</option><option>إربد</option><option>البلقاء</option><option>مادبا</option><option>جرش</option><option>عجلون</option><option>المفرق</option><option>الكرك</option><option>الطفيلة</option><option>معان</option><option>العقبة</option></select></div>
-<div class="field"><label data-i18n="area" for="area">المنطقة والعنوان</label><input data-placeholder-ar="المنطقة، الشارع، أقرب نقطة" data-placeholder-en="Area, street, nearest landmark" id="area" name="area" placeholder="المنطقة، الشارع، أقرب نقطة" required=""/></div>
-<div class="field full"><label data-i18n="notes" for="notes">ملاحظات <small data-i18n="optional">(اختياري)</small></label><textarea data-placeholder-ar="أي تفاصيل إضافية للطلب" data-placeholder-en="Any extra order details" id="notes" name="notes" placeholder="أي تفاصيل إضافية للطلب" rows="3"></textarea></div>
-<label class="confirm full"><input id="confirm" required="" type="checkbox"/><span data-i18n="confirmOrder">تأكدت من معلومات الطلب وأرغب بإرساله عبر واتساب.</span></label>
-<button class="whatsapp-btn full" type="submit"><span class="wa-icon">◉</span><span data-i18n="sendWhatsapp">إرسال الطلب عبر واتساب</span><span>←</span></button>
-<p class="form-error full" id="formError" role="alert"></p>
-</form>
-</div>
-</section>
-<section aria-label="فوائد مجموعة بلازما" class="promise section reveal">
+</section></details><section aria-label="فوائد مجموعة بلازما" class="promise section reveal">
 <div><span>1</span><strong data-i18n="benefitClean">تنظيف لطيف</strong><p data-i18n="benefitCleanText">يحافظ على رطوبة الشعر الطبيعية</p></div>
 <div><span>2</span><strong data-i18n="benefitMoisture">ترطيب متوازن</strong><p data-i18n="benefitMoistureText">للشعر الجاف والمتعب</p></div>
 <div><span>3</span><strong data-i18n="benefitShine">نعومة ولمعان</strong><p data-i18n="benefitShineText">روتين يسهل التصفيف اليومي</p></div>
