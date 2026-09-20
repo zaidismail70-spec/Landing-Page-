@@ -57,7 +57,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Header & navigation
    ========================================================= */
-.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1240px;margin:0 auto;padding:18px 28px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(83,63,22,.08)}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;padding:18px max(28px,calc((100% - 1400px) / 2 + 28px));background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(83,63,22,.08)}
 .brand{display:flex;align-items:center;gap:10px;min-width:max-content}
 .logo-window{display:block;position:relative;width:170px;height:74px;overflow:hidden}
 .brand-logo{position:absolute;width:210px;height:210px;max-width:none;left:-20px;top:-72px;object-fit:contain}
@@ -90,7 +90,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Layout primitives
    ========================================================= */
-.section{max-width:1240px;margin:auto;padding:80px 28px}
+.section{width:min(1400px,100%);margin-inline:auto;padding:80px 28px}
 
 /* =========================================================
    Hero
@@ -129,7 +129,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Promise / benefits strip
    ========================================================= */
-.promise{display:grid;grid-template-columns:repeat(3,1fr);background:#fffcf6;border:1px solid var(--color-border);border-radius:20px;padding-block:12px;max-width:1184px}
+.promise{display:grid;grid-template-columns:repeat(3,1fr);background:#fffcf6;border:1px solid var(--color-border);border-radius:20px;padding-block:12px;max-width:1344px}
 .promise>div{position:relative;padding:20px 30px;border-inline-start:1px solid var(--color-border)}
 .promise>div:first-child{border:0}
 .promise span{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid var(--color-border);border-radius:50%;font:700 13px "Manrope";color:var(--color-ink)}
@@ -263,7 +263,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Footer & floating CTA
    ========================================================= */
-footer{max-width:1240px;margin:auto;padding:35px 28px 105px;border-top:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;color:var(--color-text-muted);font-size:13px}
+footer{width:min(1400px,100%);margin-inline:auto;padding:35px 28px 105px;border-top:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;color:var(--color-text-muted);font-size:13px}
 .footer-wordmark{font:500 28px Georgia,serif;color:var(--color-ink);letter-spacing:.08em}
 .footer-wordmark small{font:600 9px Manrope,sans-serif;letter-spacing:.2em;margin-top:8px}
 .socials{display:flex;gap:18px}
@@ -387,7 +387,7 @@ body{font-family:"Tajawal",sans-serif;font-size:17px;line-height:1.65}
 .hero-selector button[aria-pressed="true"]{background:#f8f1e2;border:2px solid var(--color-accent);padding:15px;box-shadow:0 8px 24px #533f160b}
 .hero-selector strong{font-size:24px}.hero-selector small{font-size:13px}.hero-selector del{font-size:13px;color:var(--color-text-muted)}
 .hero-selector span{font-weight:700;align-self:center}.hero-selector del{grid-column:2}
-.explore-panel{max-width:1184px;margin:10px auto;border:1px solid var(--color-border);border-radius:16px;background:#fff;overflow:hidden}
+.explore-panel{max-width:1344px;margin:10px auto;border:1px solid var(--color-border);border-radius:16px;background:#fff;overflow:hidden}
 .explore-panel>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;padding:19px 24px;font-size:18px;font-weight:700;background:linear-gradient(100deg,#fff,#fffcf5)}
 .explore-panel>summary::-webkit-details-marker{display:none}.explore-panel>summary:after{content:"＋";font-size:24px;font-weight:400;color:var(--color-accent)}
 .explore-panel[open]>summary:after{content:"−"}.explore-panel[open]>summary{border-bottom:1px solid var(--color-border)}
