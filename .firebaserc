@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "landing-page-6baab"
+  },
+  "targets": {
+    "landing-page-6baab": {
+      "hosting": {
+        "default": [
+          "landing-page-6baab"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
