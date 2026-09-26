@@ -1,0 +1,21 @@
+{
+  "name": "plasma-landing-functions",
+  "description": "Cloud Functions for the Betolla PLASMA landing page order pipeline",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test:unit": "node --test test/unit/*.test.js",
+    "test:emulator": "firebase emulators:exec --only firestore,functions \"node --test test/integration/*.test.js\"",
+    "test": "npm run test:unit"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.3.1"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.4.0"
+  },
+  "private": true
+}
