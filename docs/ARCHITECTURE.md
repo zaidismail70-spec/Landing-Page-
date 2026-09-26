@@ -2,6 +2,27 @@
 
 ## Flow
 
+```mermaid
+flowchart TD
+    A[Customer browser<br/>frontend/] -->|selects package, submits form| B[Cloud Function<br/>submitOrder — me-central1]
+    B -->|validate + reprice server-side| C[(Firestore<br/>orders/customers)]
+    C -->|order durably saved| D{ERP sync<br/>inline attempt}
+    D -->|HMAC-signed POST| E[Betolla ERP<br/>/api/orders/webhook]
+    E -->|verify signature + revalidate| F[business_create_order RPC]
+    F --> G[(Supabase Postgres<br/>customers/orders/order_items)]
+    D -->|success| H[integrationStatus: synced]
+    D -->|failure, no data lost| I[integrationStatus: pending]
+    I -->|every 10 min| J[retryErpSync scheduled function]
+    J --> D
+    B -->|in-page success message<br/>this app's own order number only| A
+```
+
+Trust boundary: the browser only ever talks to Firebase (App Check + the
+callable function's own transport). It never calls Supabase or the ERP
+directly, and never sees ERP-internal identifiers.
+
+## Text flow (equivalent, for quick reference)
+
 ```
 Customer's browser (frontend/)
     │  selects a package, fills the form, clicks "Confirm order"
