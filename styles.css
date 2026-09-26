@@ -100,7 +100,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .package-includes{color:var(--color-text-muted);font-size:14px}
 .package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:6px}
 .package-card .price strong{font-size:var(--text-price);color:var(--color-ink);font-weight:800}
-.package-card .price del{color:var(--color-text-muted);font-size:13px}
+.package-card .price del{color:var(--color-text-muted);font-size:clamp(18px,1vw + 14px,20px);font-weight:600}
 .delivery-line{color:var(--color-ink);font-size:13px;font-weight:700}
 
 /* =========================================================
