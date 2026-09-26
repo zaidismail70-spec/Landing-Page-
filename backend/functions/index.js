@@ -8,7 +8,8 @@ const { OrderValidationError } = require("./src/validateOrder");
 const { syncOrderToErp, shouldRetry, MAX_ATTEMPTS } = require("./src/erpSync");
 
 admin.initializeApp();
-setGlobalOptions({ region: "us-central1", maxInstances: 10 });
+// Co-located with the Firestore database (me-central1, Doha) to minimize read/write latency.
+setGlobalOptions({ region: "me-central1", maxInstances: 10 });
 
 const APP_CHECK_ENFORCED = process.env.APP_CHECK_ENFORCED === "true";
 

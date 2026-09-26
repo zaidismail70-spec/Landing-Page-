@@ -178,8 +178,9 @@ commit the service-account key or any exported CSV (both are covered by
 
 Landing-page orders also flow into the **ERP's own** existing finance/CSV
 exports automatically — no separate export was built there. They're tagged
-`source: "landing_page"` in the ERP's `orders` table, so they're
-distinguishable from rep-entered or WhatsApp-derived orders in every report.
+`source: "plasma-landing-page"` in the ERP's `orders` table (status `draft`
+until a rep reviews and confirms — see below), so they're distinguishable
+from rep-entered or WhatsApp-derived orders in every report.
 
 ## Secrets (names only — values are never in this repo)
 

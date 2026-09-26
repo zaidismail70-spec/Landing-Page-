@@ -48,7 +48,7 @@ create a duplicate order or customer there.
 | notes | `notes` | `notes` | `installment_notes` / `orders.notes` |
 | language | `language` | `language` | *(display-only, not persisted)* |
 | — | `total`, `deliveryIncluded: true`, `deliveryFee: 0` | `total_amount` implied by package+qty | `total_amount`, `deliveryFee` forced to 0 server-side |
-| — | `source: "plasma-landing-page"` | *(implicit — this endpoint only)* | `source: "landing_page"` |
+| — | `source: "plasma-landing-page"` | *(implicit — this endpoint only)* | `source: "plasma-landing-page"`, `status: "draft"` (no inventory deducted until a rep reviews and confirms it) |
 | — | `idempotencyKey`, `externalOrderId` (same value) | `Idempotency-Key` header | `business_requests.request_key` (dedup key) |
 | — | `integrationStatus`, `erpOrderId`, `erpOrderNumber`, `syncAttempts`, `lastSyncError`, `syncedAt` | *(response)* `orderId`, `orderNumber`, `total` | `orders.id` (db_id), `orders.order_number` (`BET-2026-00042`) |
 

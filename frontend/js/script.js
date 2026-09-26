@@ -17,7 +17,9 @@ const firebaseConfig = {
   measurementId: "G-7TDF3285JF",
 };
 const firebaseApp = initializeApp(firebaseConfig);
-const functionsInstance = getFunctions(firebaseApp);
+// Must match the Cloud Function's deployed region (functions/index.js setGlobalOptions) — the
+// SDK defaults to us-central1 otherwise and every call would 404 against a me-central1 function.
+const functionsInstance = getFunctions(firebaseApp, "me-central1");
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
   connectFunctionsEmulator(functionsInstance, "localhost", 5001);
 }
