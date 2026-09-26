@@ -1,15 +1,7 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "frontend",
     "ignore": [
-      "firebase.json",
-      ".firebaserc",
-      ".git",
-      ".git/**",
-      "node_modules",
-      "node_modules/**",
-      "scratchpad",
-      "scratchpad/**",
       "**/.*",
       "**/*.log",
       "**/*.tmp"
@@ -23,7 +15,7 @@
   },
   "functions": [
     {
-      "source": "functions",
+      "source": "backend/functions",
       "codebase": "default",
       "ignore": [
         "node_modules",
