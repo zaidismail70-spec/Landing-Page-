@@ -139,6 +139,30 @@ must not be reintroduced.
    (English: "Your order has been received successfully. / Order number:
    PLM-000042 / We will contact you shortly to confirm your order.")
 
+## Before/after comparison (hero)
+
+An accessible, draggable before/after comparison sits in the hero, below the
+headline — `frontend/js/script.js`'s `initCompareSlider()`, styled by the
+`.ba-*` rules in `frontend/css/styles.css`. Mouse drag, touch drag, and
+arrow-key operation are all supported (Pointer Events cover mouse+touch in
+one implementation); `Home`/`End` always jump to the minimum/maximum value,
+and `ArrowLeft`/`ArrowRight` move the handle in the direction they visually
+point (which means decreasing the value for `ArrowRight` in RTL — the
+WAI-ARIA APG slider pattern). Labels are pinned to each panel's own logical
+reveal side (`inset-inline-start`/`end`), not centered on the frame, so they
+never end up on top of each other regardless of direction or handle
+position.
+
+**Missing assets:** the two panels currently render as clean placeholder
+gradients, not photos — no approved before/after images exist in this
+repository. Before relying on this section for real marketing, supply:
+1. **Before** — curly/frizzy/less-managed hair
+2. **After** — smoother, healthy-looking hair, the *same model* as (1)
+
+Drop both into `frontend/assets/`, then in `frontend/index.html` replace the
+`.ba-after`/`.ba-before` `<div>` backgrounds with `<img>` tags pointing at
+them (keep the existing `.ba-tag` label spans as children).
+
 ## Firestore outbox and ERP retry behavior
 
 Every order document (`orders/{idempotencyKey}`) carries its own ERP-sync
@@ -219,12 +243,15 @@ Confirm after deploying:
 
 ### Netlify
 
-This repository's `netlify.toml` is **stale/unused** — Firebase Hosting is
-the only real production target. It publishes from the repository root
-(`publish = "."`), which no longer matches this repo's layout
-(`frontend/`). It was intentionally left unmodified rather than "fixed",
-since Netlify is not live for this project; if that ever changes, update
-`netlify.toml`'s `publish` path to `frontend` before relying on it again.
+**Firebase Hosting is the only production target — Netlify is not
+production.** That said, Netlify is still an **actively connected**
+integration on this repo (it builds a deploy preview for every PR); its
+`netlify.toml` publishes from the repository root (`publish = "."`), which
+no longer matches this repo's layout (`frontend/`) since the reorganization,
+so its preview builds are likely serving a stale/empty result now.
+`netlify.toml` was intentionally left unmodified per instructions (never
+touch Netlify config) rather than "fixed" — if Netlify previews are ever
+needed again, update `netlify.toml`'s `publish` path to `frontend` first.
 
 ## Troubleshooting
 
@@ -243,3 +270,50 @@ since Netlify is not live for this project; if that ever changes, update
   on the Firestore order doc. `pending` means `retryErpSync` hasn't
   succeeded yet (check `lastSyncError`); `failed` means it exhausted 8
   attempts and needs manual attention.
+- **Local preview command not found (`http-server`, `python`, etc.)** — any
+  static file server works; e.g. `npx http-server frontend -p 8080` needs
+  only Node (already required), no Python install.
+- **Port already in use** — pick a different `-p` port for the static
+  server, or for the emulator suite pass `--only functions,firestore,hosting`
+  with the ports already set in `firebase.json`'s `emulators` block.
+- **Firebase CLI login/auth errors** — `firebase login --reauth`; confirm
+  `firebase use landing-page-6baab` afterward.
+- **"Firestore database does not exist"** — a brand-new Firebase project has
+  no Firestore database until one is created once, by hand, in the Console
+  (Build → Firestore Database → Create database) — this is a permanent
+  location choice, never automated. This project's is `me-central1`.
+- **Functions region mismatch (calls silently 404)** — the Cloud Functions
+  SDK defaults to `us-central1`. This project's functions are deployed to
+  `me-central1`; `frontend/js/script.js`'s `getFunctions(firebaseApp, "me-central1")`
+  call must match `backend/functions/index.js`'s `setGlobalOptions({ region: ... })`
+  exactly, or every `submitOrder` call fails to resolve.
+- **Missing secret metadata** — `firebase functions:secrets:get <NAME>
+  --project landing-page-6baab` shows version/state only, never the value;
+  if it 404s, the secret was never set (`firebase functions:secrets:set
+  <NAME> --project landing-page-6baab`).
+- **Callable function CORS/region errors in the browser console** — almost
+  always the region mismatch above, not a real CORS misconfiguration; check
+  the region first before touching CORS settings.
+- **ERP rejects with "invalid or expired signature"** — either the shared
+  secret differs between `ERP_SYNC_HMAC_SECRET` (this project) and
+  `ORDERS_WEBHOOK_SECRET` (the ERP project) — they must hold the *same*
+  value — or the two systems' clocks disagree by more than 5 minutes (the
+  HMAC signature includes a timestamp and rejects anything outside that
+  window).
+- **ERP temporarily unavailable** — by design this never loses the order:
+  it's already durably saved in Firestore before the ERP is ever contacted.
+  `integrationStatus` stays `pending` and `retryErpSync` (every 10 minutes)
+  retries automatically; no customer-visible impact.
+- **Idempotent retry looks like nothing happened** — that's correct. A
+  repeated `submitOrder` call (or ERP sync retry) with the same idempotency
+  key returns the *original* order/result rather than creating a new one; if
+  you need a genuinely new order, the client must generate a new key.
+- **GitHub push protection / PR ruleset blocks a merge or direct push** — this
+  repo's ruleset requires an approving review from someone other than the
+  last pusher; check `gh api repos/<owner>/<repo>/rules/branches/main` for
+  the exact active rule, and either submit a review from a different GitHub
+  identity or have the repo owner merge directly.
+- **Mobile browser shows an old cached version** — Hosting deploys are
+  immediate, but mobile browsers (especially iOS Safari) can hold onto a
+  cached page aggressively; hard-refresh or clear the site's cache, or
+  append a cache-busting query string while testing.
