@@ -112,15 +112,16 @@
 <p class="delivery-line" data-i18n="deliveryIncluded">شامل التوصيل</p>
 </div>
 
-<button class="whatsapp-btn full" id="submitBtn" type="submit">
-<span aria-hidden="true" class="wa-icon">◉</span>
-<span data-i18n="submitOrder" id="submitBtnLabel">أكملي طلبك عبر واتساب</span>
+<button class="submit-btn full" id="submitBtn" type="submit">
+<span aria-hidden="true" class="submit-icon">✓</span>
+<span data-i18n="submitOrder" id="submitBtnLabel">تأكيد الطلب</span>
 </button>
-<p class="privacy-note full" data-i18n="privacyNote">باستكمال الطلب، سيتم استخدام بياناتك لتأكيد الطلب والتوصيل فقط.</p>
+<p class="privacy-note full" data-i18n="privacyNote" id="privacyNote">باستكمال الطلب، سيتم استخدام بياناتك لتأكيد الطلب والتوصيل فقط.</p>
 <p aria-live="assertive" class="form-status full" id="formStatus" role="status"></p>
-<div class="retry-panel full" hidden="" id="retryPanel">
-<p id="retryOrderNumber"></p>
-<button class="secondary-btn" id="retryWhatsappBtn" type="button"><span data-i18n="retryWhatsapp">إعادة المحاولة على واتساب</span></button>
+<div class="success-panel full" hidden="" id="successPanel" role="status">
+<p class="success-title" data-i18n="orderConfirmed">تم استلام طلبك بنجاح</p>
+<p class="success-row"><span data-i18n="orderNumberLabel">رقم طلبك:</span> <strong id="successOrderNumber"></strong></p>
+<p class="success-note" data-i18n="successContactNote">سنتواصل معك قريبًا لتأكيد الطلب.</p>
 </div>
 </form>
 </section>

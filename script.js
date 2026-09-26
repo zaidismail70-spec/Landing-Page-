@@ -41,7 +41,7 @@ const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const content = {
   ar: {
     pageTitle: "بلازما للعناية بالشعر | Betolla",
-    metaDescription: "روتين بلازما الكامل لشعر أنعم وأقوى. اختاري البكج وأكملي طلبك مباشرة عبر واتساب.",
+    metaDescription: "روتين بلازما الكامل لشعر أنعم وأقوى. اختاري البكج وأكملي طلبك مباشرة من الموقع.",
     orderNow: "اطلبي الآن",
     heroHeadline: "روتين بلازما الكامل لشعر أنعم وأقوى",
     heroSub: "منتجات بلازما الأربعة في بكج واحد، بسعر واحد يشمل التوصيل.",
@@ -64,23 +64,23 @@ const content = {
     optional: "(اختياري)",
     summaryTitle: "ملخص الطلب",
     total: "الإجمالي",
-    submitOrder: "أكملي طلبك عبر واتساب",
+    submitOrder: "تأكيد الطلب",
     submitOrderSaving: "جارٍ الحفظ...",
-    retryWhatsapp: "إعادة المحاولة على واتساب",
     privacyNote: "باستكمال الطلب، سيتم استخدام بياناتك لتأكيد الطلب والتوصيل فقط.",
     errorRequired: "يرجى تعبئة جميع الحقول المطلوبة.",
     errorName: "الرجاء إدخال الاسم الكامل.",
     errorPhone: "رقم هاتف أردني غير صحيح، مثال: 07XXXXXXXX.",
     errorGovernorate: "الرجاء اختيار المحافظة.",
     errorArea: "الرجاء إدخال المنطقة والعنوان.",
-    orderSaved: "تم حفظ طلبك بنجاح، رقم الطلب: {n}",
     genericError: "تعذر حفظ الطلب، الرجاء المحاولة مرة أخرى.",
-    waBlockedNotice: "لم يفتح واتساب تلقائيًا. اضغطي لإعادة المحاولة.",
+    orderConfirmed: "تم استلام طلبك بنجاح",
+    orderNumberLabel: "رقم طلبك:",
+    successContactNote: "سنتواصل معك قريبًا لتأكيد الطلب.",
     langLabel: "EN",
   },
   en: {
     pageTitle: "PLASMA Hair Care | Betolla",
-    metaDescription: "Your complete PLASMA routine for softer, stronger hair. Choose a set and finish your order on WhatsApp.",
+    metaDescription: "Your complete PLASMA routine for softer, stronger hair. Choose a set and complete your order right on the site.",
     orderNow: "Order now",
     heroHeadline: "Your complete PLASMA routine for softer, stronger hair",
     heroSub: "All four PLASMA products in one set, at one price that includes delivery.",
@@ -103,18 +103,18 @@ const content = {
     optional: "(optional)",
     summaryTitle: "Order summary",
     total: "Total",
-    submitOrder: "Complete your order via WhatsApp",
+    submitOrder: "Confirm order",
     submitOrderSaving: "Saving...",
-    retryWhatsapp: "Retry on WhatsApp",
     privacyNote: "By completing the order, your information will be used only to confirm and deliver your order.",
     errorRequired: "Please fill in all required fields.",
     errorName: "Please enter your full name.",
     errorPhone: "Invalid Jordanian phone number, e.g. 07XXXXXXXX.",
     errorGovernorate: "Please choose a governorate.",
     errorArea: "Please enter your area and address.",
-    orderSaved: "Your order was saved. Order number: {n}",
     genericError: "We couldn't save your order, please try again.",
-    waBlockedNotice: "WhatsApp didn't open automatically. Tap to retry.",
+    orderConfirmed: "Your order has been received successfully.",
+    orderNumberLabel: "Order number:",
+    successContactNote: "We will contact you shortly to confirm your order.",
     langLabel: "ع",
   },
 };
@@ -150,8 +150,6 @@ const GOVERNORATES = [
   { value: "aqaba", ar: "العقبة", en: "Aqaba" },
 ];
 
-const WHATSAPP_NUMBER = "962798153370";
-
 function detectInitialLanguage() {
   const fromUrl = new URLSearchParams(location.search).get("lang");
   if (fromUrl === "ar" || fromUrl === "en") return fromUrl;
@@ -167,7 +165,6 @@ let selectedPackage = "plasma-complete";
 let quantity = 1;
 let submitting = false;
 let idempotencyKey = crypto.randomUUID();
-let lastWaUrl = null;
 
 // --- Governorate select --------------------------------------------------
 function buildGovernorateOptions() {
@@ -328,51 +325,6 @@ function validateForm() {
   return errors;
 }
 
-// --- WhatsApp message -----------------------------------------------------
-function buildWhatsappMessage(order, payload) {
-  const isAr = payload.language === "ar";
-  const pkgName = isAr
-    ? (payload.packageId === "plasma-complete" ? content.ar.completeName : content.ar.duoName)
-    : (payload.packageId === "plasma-complete" ? content.en.completeName : content.en.duoName);
-  const includes = isAr
-    ? (payload.packageId === "plasma-complete" ? content.ar.completeIncludes : content.ar.duoIncludes)
-    : (payload.packageId === "plasma-complete" ? content.en.completeIncludes : content.en.duoIncludes);
-  const deliveryLine = isAr ? "شامل التوصيل" : "Delivery included";
-  const lines = isAr
-    ? [
-        "*طلب جديد من صفحة PLASMA*",
-        "رقم الطلب: " + order.orderNumber,
-        "",
-        "الاسم: " + payload.fullName,
-        "الهاتف: " + payload.phone,
-        "المحافظة: " + payload.governorateLabel,
-        "العنوان: " + payload.areaAddress,
-        "",
-        "البكج: " + pkgName,
-        "المحتويات: " + includes,
-        "الكمية: " + payload.quantity,
-        "الإجمالي: " + order.total + " د.أ",
-        deliveryLine,
-      ]
-    : [
-        "*New order from the PLASMA page*",
-        "Order number: " + order.orderNumber,
-        "",
-        "Name: " + payload.fullName,
-        "Phone: " + payload.phone,
-        "Governorate: " + payload.governorateLabel,
-        "Address: " + payload.areaAddress,
-        "",
-        "Package: " + pkgName,
-        "Includes: " + includes,
-        "Quantity: " + payload.quantity,
-        "Total: " + order.total + " JOD",
-        deliveryLine,
-      ];
-  if (payload.notes) lines.push((isAr ? "ملاحظات: " : "Notes: ") + payload.notes);
-  return lines.join("\n");
-}
-
 // --- Submit -----------------------------------------------------------
 function setButtonLoading(isLoading) {
   const btn = $("#submitBtn");
@@ -386,18 +338,13 @@ function showStatus(message, kind) {
   el.className = "form-status full" + (kind ? " " + kind : "");
 }
 
-function showRetryPanel(orderNumber, waUrl) {
-  lastWaUrl = waUrl;
-  $("#retryOrderNumber").textContent = `${content[lang].waBlockedNotice} (${orderNumber})`;
-  $("#retryPanel").hidden = false;
+function showSuccess(order) {
+  $("#submitBtn").hidden = true;
+  $("#privacyNote").hidden = true;
+  $("#successOrderNumber").textContent = order.orderNumber;
+  $("#successPanel").hidden = false;
+  $$("#orderForm input, #orderForm select, #orderForm textarea, #orderForm button[data-qty]").forEach((el) => (el.disabled = true));
 }
-function hideRetryPanel() {
-  $("#retryPanel").hidden = true;
-  lastWaUrl = null;
-}
-$("#retryWhatsappBtn").addEventListener("click", () => {
-  if (lastWaUrl) window.open(lastWaUrl, "_blank", "noopener");
-});
 
 $("#orderForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -411,11 +358,6 @@ $("#orderForm").addEventListener("submit", async (e) => {
 
   submitting = true;
   setButtonLoading(true);
-  hideRetryPanel();
-
-  // Open the destination tab synchronously, inside the click gesture, so the
-  // browser doesn't treat the later async redirect as an unsolicited popup.
-  const waWindow = window.open("", "_blank");
 
   const f = $("#orderForm");
   const governorateOption = f.governorate.selectedOptions[0];
@@ -433,24 +375,11 @@ $("#orderForm").addEventListener("submit", async (e) => {
 
   try {
     const res = await submitOrderFn({ ...payload, idempotencyKey });
-    const order = res.data;
-    const message = buildWhatsappMessage(order, payload);
-    const waUrl = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
-
-    if (waWindow) {
-      waWindow.location.href = waUrl;
-      showStatus(content[lang].orderSaved.replace("{n}", order.orderNumber), "success");
-    } else {
-      showStatus(content[lang].orderSaved.replace("{n}", order.orderNumber), "success");
-      showRetryPanel(order.orderNumber, waUrl);
-    }
-    idempotencyKey = crypto.randomUUID();
+    showSuccess(res.data);
   } catch (err) {
-    if (waWindow && !waWindow.closed) waWindow.close();
     const details = err && err.details;
     const message = details ? (lang === "ar" ? details.messageAr : details.messageEn) : content[lang].genericError;
     showStatus(message || content[lang].genericError, "error");
-  } finally {
     submitting = false;
     setButtonLoading(false);
   }

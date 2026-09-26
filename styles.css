@@ -125,17 +125,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .summary-row.grand{font-size:19px;font-weight:800;color:var(--color-ink);border-top:1px solid var(--color-border);margin-top:4px;padding-top:10px}
 .order-summary .delivery-line{margin-top:6px}
 
-.whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:12px;border:0;border-radius:14px;background:#1fa463;color:#fff;padding:15px;min-height:52px;font-weight:800;font-size:16px;box-shadow:0 12px 26px rgba(31,164,99,.22);transition:transform var(--ease-standard),box-shadow var(--ease-standard),opacity var(--ease-standard)}
-.whatsapp-btn:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(31,164,99,.3)}
-.whatsapp-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
-.wa-icon{font-size:19px}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:12px;border:0;border-radius:14px;background:linear-gradient(120deg,#533F16,#7B6535);color:#fff;padding:15px;min-height:52px;font-weight:800;font-size:16px;box-shadow:0 12px 26px rgba(83,63,22,.22);transition:transform var(--ease-standard),box-shadow var(--ease-standard),opacity var(--ease-standard)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(83,63,22,.3)}
+.submit-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.submit-btn[hidden]{display:none}
+.submit-icon{font-size:19px}
 .privacy-note{color:var(--color-text-muted);font-size:13px;text-align:center;margin:0}
 .form-status{margin:0;font-size:14px;text-align:center;min-height:18px}
 .form-status.error{color:#b83d3d;font-weight:700}
 .form-status.success{color:#1fa463;font-weight:700}
-.retry-panel{display:flex;flex-direction:column;align-items:center;gap:10px;background:#fff7e6;border:1px solid var(--color-accent-soft);border-radius:14px;padding:16px}
-.retry-panel[hidden]{display:none}
-.retry-panel p{margin:0;font-weight:700}
+.success-panel{display:flex;flex-direction:column;align-items:center;gap:6px;background:#f2f9f5;border:1px solid #bfe3cc;border-radius:14px;padding:20px;text-align:center}
+.success-panel[hidden]{display:none}
+.success-title{margin:0 0 4px;font-size:18px;font-weight:800;color:#1fa463}
+.success-row{margin:0;font-size:16px}
+.success-row strong{font-size:19px;color:var(--color-ink)}
+.success-note{margin:4px 0 0;font-size:14px;color:var(--color-text-muted)}
 
 /* =========================================================
    Footer
