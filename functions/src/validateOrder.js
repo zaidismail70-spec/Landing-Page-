@@ -1,4 +1,4 @@
-const { CATALOG, GOVERNORATES, MAX_QUANTITY, MAX_NAME_LENGTH, MAX_ADDRESS_LENGTH, MAX_NOTES_LENGTH } = require("./catalog");
+const { CATALOG, GOVERNORATES, GOVERNORATE_LABELS_AR, MAX_QUANTITY, MAX_NAME_LENGTH, MAX_ADDRESS_LENGTH, MAX_NOTES_LENGTH } = require("./catalog");
 const { normalizeJordanianPhone } = require("./phone");
 
 class OrderValidationError extends Error {
@@ -74,6 +74,7 @@ function validateOrder(input) {
     fullName,
     normalizedPhone,
     governorate,
+    governorateLabelAr: GOVERNORATE_LABELS_AR[governorate],
     areaAddress,
     notes,
     language,

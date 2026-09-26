@@ -93,6 +93,11 @@ test("accepts governorate case-insensitively", () => {
   assert.equal(out.governorate, "amman");
 });
 
+test("attaches the Arabic governorate label for the ERP sync, regardless of storefront language", () => {
+  assert.equal(validateOrder({ ...baseInput(), governorate: "amman" }).governorateLabelAr, "عمّان");
+  assert.equal(validateOrder({ ...baseInput(), governorate: "aqaba", language: "en" }).governorateLabelAr, "العقبة");
+});
+
 test("rejects missing area/address", () => {
   assert.throws(() => validateOrder({ ...baseInput(), areaAddress: "" }), OrderValidationError);
 });

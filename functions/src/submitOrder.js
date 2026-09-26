@@ -37,6 +37,7 @@ async function submitOrder({ db, FieldValue, input, idempotencyKey }) {
         deliveryIncluded: true,
         deliveryFee: 0,
         replay: true,
+        orderData: existing,
       };
     }
 
@@ -46,13 +47,14 @@ async function submitOrder({ db, FieldValue, input, idempotencyKey }) {
     const orderNumber = formatOrderNumber(nextSeq);
     const now = FieldValue.serverTimestamp();
 
-    txn.set(orderRef, {
+    const orderDoc = {
       orderId: idempotencyKey,
       orderNumber,
       customerId,
       fullName: validated.fullName,
       normalizedPhone: validated.normalizedPhone,
       governorate: validated.governorate,
+      governorateLabelAr: validated.governorateLabelAr,
       areaAddress: validated.areaAddress,
       packageId: validated.packageId,
       packageNameAr: validated.packageNameAr,
@@ -70,7 +72,20 @@ async function submitOrder({ db, FieldValue, input, idempotencyKey }) {
       status: "new",
       createdAt: now,
       idempotencyKey,
-    });
+      // This app's own outbox for the ERP sync (functions/src/erpSync.js): starts pending and is
+      // filled in right after this transaction commits, or later by retryErpSync. externalOrderId
+      // is what this app sends the ERP as its own correlation id (the same Idempotency-Key), and
+      // erpOrderId/erpOrderNumber are what the ERP hands back once synced.
+      integrationStatus: "pending",
+      externalOrderId: idempotencyKey,
+      erpOrderId: null,
+      erpOrderNumber: null,
+      syncAttempts: 0,
+      lastSyncError: null,
+      erpLastAttemptAt: null,
+      syncedAt: null,
+    };
+    txn.set(orderRef, orderDoc);
 
     txn.set(counterRef, { count: nextSeq }, { merge: true });
 
@@ -109,6 +124,7 @@ async function submitOrder({ db, FieldValue, input, idempotencyKey }) {
       deliveryIncluded: true,
       deliveryFee: 0,
       replay: false,
+      orderData: orderDoc,
     };
   });
 
