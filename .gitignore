@@ -1,0 +1,19 @@
+.firebase/
+node_modules/
+*.log
+*.tmp
+.DS_Store
+
+# Firebase Admin SDK service account credentials — never commit these.
+serviceAccountKey*.json
+*-firebase-adminsdk-*.json
+firebase-adminsdk*.json
+
+# Local emulator exports and admin CSV exports (may contain customer data).
+firebase-export-*/
+exports/
+*.csv
+
+# Local environment files
+.env
+.env.*

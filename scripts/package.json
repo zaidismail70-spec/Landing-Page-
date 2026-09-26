@@ -1,0 +1,8 @@
+{
+  "name": "plasma-landing-admin-scripts",
+  "private": true,
+  "description": "Local-only administrator tools (CSV export). Never deployed, never exposed publicly.",
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
