@@ -78,7 +78,39 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
 .hero-copy p{max-width:480px;margin:0 auto;color:var(--color-text-muted)}
 .hero-visual{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--color-tint);height:clamp(210px,52vw,280px);display:flex;align-items:center;justify-content:center}
-.hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease}
+.hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease,transform .4s ease}
+
+/* =========================================================
+   Before/after comparison — drag, touch, or arrow keys.
+   NOTE: the two panels are clean placeholder gradients, not
+   photos — see README "Missing assets" until real approved
+   before/after photos of the same model are supplied.
+   ========================================================= */
+.ba-compare{margin:14px auto 0;max-width:420px}
+.ba-frame{position:relative;overflow:hidden;border-radius:var(--radius-md);aspect-ratio:16/10;box-shadow:var(--shadow-card-rest);user-select:none;-webkit-user-select:none;touch-action:none}
+.ba-panel{position:absolute;inset:0}
+/* Pinned to each panel's own reveal side (logical, so it mirrors correctly for RTL) rather
+   than centered on the full frame — centering both would place them on top of each other. */
+.ba-before .ba-tag{position:absolute;bottom:14px;inset-inline-start:14px}
+.ba-after .ba-tag{position:absolute;bottom:14px;inset-inline-end:14px}
+.ba-after{background:linear-gradient(135deg,#f6efdf,#e5d0a1)}
+.ba-before{background:linear-gradient(135deg,#cbbfa0,#9c8f72);clip-path:inset(0 calc(100% - var(--ba-pos) * 1%) 0 0)}
+html[dir="rtl"] .ba-before{clip-path:inset(0 0 0 calc(100% - var(--ba-pos) * 1%))}
+.ba-tag{background:rgba(255,255,255,.9);color:var(--color-ink);padding:6px 12px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;white-space:nowrap}
+.ba-handle{position:absolute;top:0;bottom:0;inset-inline-start:calc(var(--ba-pos) * 1%);transform:translateX(-50%);display:flex;align-items:center;width:0}
+html[dir="rtl"] .ba-handle{transform:translateX(50%)}
+.ba-handle::before{content:"";position:absolute;top:0;bottom:0;inset-inline-start:-1px;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.ba-handle::after{content:"↔";position:absolute;top:50%;inset-inline-start:50%;transform:translate(-50%,-50%);width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--color-ink);color:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 4px 12px rgba(83,63,22,.3);cursor:ew-resize}
+.ba-handle:focus-visible::after{outline:3px solid var(--color-accent);outline-offset:2px}
+
+/* =========================================================
+   Subtle motion — entrance only, respects reduced-motion below
+   ========================================================= */
+@keyframes gentle-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.hero-copy,.hero-visual,.package-card{animation:gentle-in .5s ease both}
+.package-card:nth-child(2){animation-delay:.08s}
+@media(hover:hover) and (pointer:fine){.hero-visual:hover img{transform:scale(1.02)}}
+.success-panel{animation:gentle-in .4s ease both}
 
 /* =========================================================
    Section headings
@@ -179,9 +211,10 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
   .hero-copy p{margin:0 0 0}
   .hero-visual{flex:1;height:auto;aspect-ratio:1}
   .hero-visual img{object-fit:cover;object-position:center 38%}
+  .ba-compare{margin-inline:0;max-width:none}
   .section-heading h2{font-size:var(--text-heading)}
 }
 
 @media(prefers-reduced-motion:reduce){
-  *{scroll-behavior:auto!important;transition:none!important}
+  *{scroll-behavior:auto!important;transition:none!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
 }

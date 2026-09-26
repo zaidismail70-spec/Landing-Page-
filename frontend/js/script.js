@@ -78,6 +78,10 @@ const content = {
     orderConfirmed: "تم استلام طلبك بنجاح",
     orderNumberLabel: "رقم طلبك:",
     successContactNote: "سنتواصل معك قريبًا لتأكيد الطلب.",
+    beforeLabel: "قبل استخدام بكج بلازما",
+    afterLabel: "بعد استخدام بكج بلازما",
+    compareAriaLabel: "قارني قبل وبعد استخدام بكج بلازما",
+    compareHandleLabel: "سحب للمقارنة بين قبل وبعد",
     langLabel: "EN",
   },
   en: {
@@ -117,6 +121,10 @@ const content = {
     orderConfirmed: "Your order has been received successfully.",
     orderNumberLabel: "Order number:",
     successContactNote: "We will contact you shortly to confirm your order.",
+    beforeLabel: "Before using the PLASMA package",
+    afterLabel: "After using the PLASMA package",
+    compareAriaLabel: "Compare before and after using the PLASMA package",
+    compareHandleLabel: "Drag to compare before and after",
     langLabel: "ع",
   },
 };
@@ -272,6 +280,8 @@ function setLanguage(next) {
   buildGovernorateOptions();
   updateSummary();
   clearFieldErrors();
+  $("#baCompare").setAttribute("aria-label", content[lang].compareAriaLabel);
+  $("#baHandle").setAttribute("aria-label", content[lang].compareHandleLabel);
 }
 $("#langToggle").addEventListener("click", () => setLanguage(lang === "ar" ? "en" : "ar"));
 
@@ -386,6 +396,66 @@ $("#orderForm").addEventListener("submit", async (e) => {
     setButtonLoading(false);
   }
 });
+
+// --- Before/after comparison slider: drag, touch, and arrow keys --------
+(function initCompareSlider() {
+  const frame = $("#baFrame");
+  const handle = $("#baHandle");
+  if (!frame || !handle) return;
+  let pos = 50;
+
+  function setPos(next) {
+    pos = Math.max(0, Math.min(100, next));
+    frame.style.setProperty("--ba-pos", String(pos));
+    handle.setAttribute("aria-valuenow", String(Math.round(pos)));
+  }
+
+  function posFromClientX(clientX) {
+    const rect = frame.getBoundingClientRect();
+    const ratio = (clientX - rect.left) / rect.width;
+    const ltrPos = Math.max(0, Math.min(100, ratio * 100));
+    return lang === "ar" ? 100 - ltrPos : ltrPos;
+  }
+
+  let dragging = false;
+  function onPointerMove(e) {
+    if (!dragging) return;
+    setPos(posFromClientX(e.clientX));
+  }
+  function stopDrag() {
+    dragging = false;
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", stopDrag);
+  }
+  function startDrag(e) {
+    dragging = true;
+    setPos(posFromClientX(e.clientX));
+    e.preventDefault();
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", stopDrag);
+  }
+  handle.addEventListener("pointerdown", startDrag);
+  // Clicking/tapping anywhere on the image (not just the 44px handle) also starts a drag
+  // from that point, which is the usual before/after-slider convention.
+  frame.addEventListener("pointerdown", (e) => {
+    if (e.target === handle) return;
+    startDrag(e);
+  });
+
+  handle.addEventListener("keydown", (e) => {
+    const step = e.shiftKey ? 10 : 4;
+    const rtl = lang === "ar";
+    // Arrow keys move the handle in the direction they point, visually — which means
+    // decreasing the value for ArrowRight in RTL (WAI-ARIA APG slider pattern). Home/End
+    // are NOT direction-dependent: Home is always the minimum value, End the maximum.
+    if (e.key === "ArrowLeft") { setPos(pos + (rtl ? step : -step)); e.preventDefault(); }
+    else if (e.key === "ArrowRight") { setPos(pos + (rtl ? -step : step)); e.preventDefault(); }
+    else if (e.key === "Home") { setPos(0); e.preventDefault(); }
+    else if (e.key === "End") { setPos(100); e.preventDefault(); }
+  });
+
+  setPos(50);
+})();
 
 // --- Init ---------------------------------------------------------------
 setLanguage(lang);
