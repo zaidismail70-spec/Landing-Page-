@@ -509,12 +509,13 @@ renderPackages();
   if (reduceMotion || typeof IntersectionObserver === "undefined") return;
 
   // One-time scroll reveal for package cards, the order form, and the footer.
+  // threshold 0.2 with no rootMargin: this only fires once the element is
+  // genuinely, visibly scrolling into the viewport — not pre-emptively, so
+  // the rise+fade is actually seen rather than having already happened
+  // before the user scrolled anywhere near it.
   document.documentElement.classList.add("js-reveal-ready");
   const revealTargets = [...$$(".package-card"), $(".order-form"), $("footer")].filter(Boolean);
   revealTargets.forEach((el) => el.classList.add("reveal"));
-  // Generous bottom rootMargin: reveals trigger well before the element is
-  // actually scrolled into view, so nothing critical (the order form, the
-  // footer) is ever left waiting on a perfectly-timed scroll to become visible.
   const revealObserver = new IntersectionObserver(
     (entries, obs) => {
       entries.forEach((entry) => {
@@ -523,7 +524,7 @@ renderPackages();
         obs.unobserve(entry.target);
       });
     },
-    { threshold: 0.01, rootMargin: "0px 0px 300px 0px" }
+    { threshold: 0.2 }
   );
   revealTargets.forEach((el) => revealObserver.observe(el));
   // Safety net: force everything visible after a few seconds no matter what,
@@ -545,12 +546,56 @@ renderPackages();
   );
   sheenTargets.forEach((el) => sheenObserver.observe(el));
 
+  // Product atmosphere (glow/ripples/bubbles): only animate while the hero
+  // is actually on screen — paused the instant it scrolls away, resumed the
+  // instant it scrolls back (see .hero-visual-aura.in-view in styles.css).
+  const heroAura = $("#heroAura");
+  if (heroAura) {
+    const auraObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => heroAura.classList.toggle("in-view", entry.isIntersecting));
+      },
+      { threshold: 0 }
+    );
+    auraObserver.observe(heroAura);
+  }
+
+  // Flowing gold lines: draw themselves once via stroke-dasharray/dashoffset
+  // the first time each enters the viewport. The path's default CSS state
+  // (see .flow-line path in styles.css) is fully drawn/visible, so if this
+  // never runs for any reason the line is simply static, never invisible.
+  $$(".flow-line path").forEach((path) => {
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = String(length);
+    path.style.strokeDashoffset = String(length);
+    // Two rAFs: the browser must actually paint the fully-hidden state at
+    // least once before the transition is attached and observation starts,
+    // otherwise it has no "from" value to interpolate and the draw-in just
+    // snaps straight to fully-visible instead of animating.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        path.style.transition = "stroke-dashoffset 1.4s ease";
+        const lineObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              path.style.strokeDashoffset = "0";
+              obs.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.2 }
+        );
+        lineObserver.observe(path.closest(".flow-line"));
+      });
+    });
+  });
+
   // Gentle pulse on the comparison handle to draw attention, stopping for good
   // the moment the user actually touches/drags/keys it (see stopHandlePulse(),
   // wired into the slider's own drag/keydown handlers above).
   const handle = $("#baHandle");
   if (handle) {
     window.setTimeout(() => handle.classList.add("pulse"), 1200);
-    window.setTimeout(() => handle.classList.remove("pulse"), 1200 + 1800 * 3 + 200);
+    window.setTimeout(() => handle.classList.remove("pulse"), 1200 + 850 * 2 + 300);
   }
 })();
