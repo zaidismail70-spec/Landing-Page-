@@ -39,6 +39,25 @@ const submitOrderFn = httpsCallable(functionsInstance, "submitOrder");
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
+// --- Motion helpers (used by package selection + the initMotion IIFE below) ---
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function triggerCardGlow(card) {
+  if (reduceMotion) return;
+  card.classList.remove("just-selected");
+  void card.offsetWidth; // force reflow so the animation can retrigger on repeat selections
+  card.classList.add("just-selected");
+  card.addEventListener(
+    "animationend",
+    () => card.classList.remove("just-selected"),
+    { once: true }
+  );
+}
+
+function stopHandlePulse() {
+  $("#baHandle")?.classList.remove("pulse");
+}
+
 // --- Content -----------------------------------------------------------
 const content = {
   ar: {
@@ -195,13 +214,20 @@ function buildGovernorateOptions() {
 }
 
 // --- Package selector -----------------------------------------------------
+let packagesRenderedOnce = false;
 function renderPackages() {
   $$(".package-card").forEach((card) => {
     const key = card.dataset.package;
     const isSelected = key === selectedPackage;
+    const wasSelected = card.classList.contains("selected");
     card.classList.toggle("selected", isSelected);
     card.setAttribute("aria-checked", String(isSelected));
+    // Only glow on an actual selection change made by the user, never on the
+    // initial page render (see the bottom of this file, `renderPackages()` runs
+    // once at load to reflect the default-selected package).
+    if (isSelected && !wasSelected && packagesRenderedOnce) triggerCardGlow(card);
   });
+  packagesRenderedOnce = true;
 }
 
 function selectPackage(key) {
@@ -432,6 +458,7 @@ $("#orderForm").addEventListener("submit", async (e) => {
     window.removeEventListener("pointerup", stopDrag);
   }
   function startDrag(e) {
+    stopHandlePulse();
     dragging = true;
     setPos(posFromClientX(e.clientX));
     e.preventDefault();
@@ -447,6 +474,7 @@ $("#orderForm").addEventListener("submit", async (e) => {
   });
 
   handle.addEventListener("keydown", (e) => {
+    stopHandlePulse();
     const step = e.shiftKey ? 10 : 4;
     const rtl = lang === "ar";
     // Arrow keys move the handle in the direction they point, visually — which means
@@ -464,3 +492,65 @@ $("#orderForm").addEventListener("submit", async (e) => {
 // --- Init ---------------------------------------------------------------
 setLanguage(lang);
 renderPackages();
+
+// --- Motion: header scroll shadow, scroll reveals, one-time sheens, handle
+// pulse. Purely presentational — touches no checkout/order/pricing state.
+// Fully skipped under prefers-reduced-motion (content stays as CSS renders
+// it by default: immediately visible, no reveal/sheen/pulse classes ever
+// added).
+(function initMotion() {
+  const nav = $(".nav");
+  if (nav) {
+    const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  if (reduceMotion || typeof IntersectionObserver === "undefined") return;
+
+  // One-time scroll reveal for package cards, the order form, and the footer.
+  document.documentElement.classList.add("js-reveal-ready");
+  const revealTargets = [...$$(".package-card"), $(".order-form"), $("footer")].filter(Boolean);
+  revealTargets.forEach((el) => el.classList.add("reveal"));
+  // Generous bottom rootMargin: reveals trigger well before the element is
+  // actually scrolled into view, so nothing critical (the order form, the
+  // footer) is ever left waiting on a perfectly-timed scroll to become visible.
+  const revealObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.01, rootMargin: "0px 0px 300px 0px" }
+  );
+  revealTargets.forEach((el) => revealObserver.observe(el));
+  // Safety net: force everything visible after a few seconds no matter what,
+  // so a missed/late intersection callback can never leave real content
+  // (especially the order form) permanently invisible.
+  window.setTimeout(() => revealTargets.forEach((el) => el.classList.add("is-visible")), 4000);
+
+  // One-time light sweep once the product image / CTA buttons enter view.
+  const sheenTargets = [$("#heroVisual"), $(".mini-cta"), $("#submitBtn")].filter(Boolean);
+  const sheenObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("run");
+        obs.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.4 }
+  );
+  sheenTargets.forEach((el) => sheenObserver.observe(el));
+
+  // Gentle pulse on the comparison handle to draw attention, stopping for good
+  // the moment the user actually touches/drags/keys it (see stopHandlePulse(),
+  // wired into the slider's own drag/keydown handlers above).
+  const handle = $("#baHandle");
+  if (handle) {
+    window.setTimeout(() => handle.classList.add("pulse"), 1200);
+    window.setTimeout(() => handle.classList.remove("pulse"), 1200 + 1800 * 3 + 200);
+  }
+})();
