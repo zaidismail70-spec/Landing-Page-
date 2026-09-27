@@ -153,15 +153,11 @@ reveal side (`inset-inline-start`/`end`), not centered on the frame, so they
 never end up on top of each other regardless of direction or handle
 position.
 
-**Missing assets:** the two panels currently render as clean placeholder
-gradients, not photos — no approved before/after images exist in this
-repository. Before relying on this section for real marketing, supply:
-1. **Before** — curly/frizzy/less-managed hair
-2. **After** — smoother, healthy-looking hair, the *same model* as (1)
-
-Drop both into `frontend/assets/`, then in `frontend/index.html` replace the
-`.ba-after`/`.ba-before` `<div>` backgrounds with `<img>` tags pointing at
-them (keep the existing `.ba-tag` label spans as children).
+**Assets:** the two panels render the approved before/after photos —
+`frontend/assets/images/plasma-hair-before.webp` (curly/frizzy hair) and
+`plasma-hair-after.webp` (smoother hair, includes the Betolla logo), each an
+`<img>` inside its `.ba-panel` with `object-fit:cover` so the panel's fixed
+16:10 frame never distorts them.
 
 ## Firestore outbox and ERP retry behavior
 

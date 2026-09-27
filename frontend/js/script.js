@@ -263,6 +263,10 @@ function setLanguage(next) {
     const v = content[lang][el.dataset.i18nPlaceholder];
     if (v !== undefined) el.placeholder = v;
   });
+  $$('[data-i18n-alt]').forEach((el) => {
+    const v = content[lang][el.dataset.i18nAlt];
+    if (v !== undefined) el.alt = v;
+  });
   document.title = content[lang].pageTitle;
   const desc = content[lang].metaDescription;
   ["metaDescription", "ogTitle", "ogDescription", "twitterTitle", "twitterDescription"].forEach((id) => {
