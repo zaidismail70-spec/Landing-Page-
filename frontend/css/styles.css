@@ -66,7 +66,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .primary-btn:hover,.mini-cta:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(83,63,22,.24)}
 .secondary-btn{background:transparent;color:var(--color-ink);border:1px solid rgba(83,63,22,.35);min-height:var(--touch-min)}
 .secondary-btn:hover{background:var(--color-ink);color:#fff}
-.mini-cta:active,.primary-btn:active,.secondary-btn:active,.submit-btn:active,.lang:active{transform:scale(.96)}
+.mini-cta:active,.primary-btn:active,.secondary-btn:active,.submit-btn:active,.lang:active{transform:scale(.96);opacity:.85}
 
 /* =========================================================
    Layout
@@ -85,52 +85,56 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    ========================================================= */
 .hero{display:flex;flex-direction:column;gap:16px;padding-block:16px 8px;text-align:center}
 .hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
+/* Shimmer only on the hero headline, never every heading. The solid
+   --color-ink fallback above already applies when background-clip:text
+   isn't supported (the @supports gate below never fires), so the text is
+   always readable either way. Paused via .hero.in-view, same switch as the
+   ambient blobs, and skipped entirely if animations are disabled globally
+   (see the prefers-reduced-motion block at the end of this file, which
+   already forces every animation to 1 frame — here we additionally pin the
+   text to a solid color so it never gets stuck mid-gradient). */
+@supports (background-clip:text) or (-webkit-background-clip:text){
+  .shimmer-title{
+    background-image:linear-gradient(100deg,#6A5218 0%,#B8923B 24%,#F7F0DF 48%,#E8D6A6 64%,#6A5218 100%);
+    background-size:250% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+    animation:title-shimmer 6s linear infinite;
+    animation-play-state:paused;
+  }
+  .hero.in-view .shimmer-title{animation-play-state:running}
+}
+@keyframes title-shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@media(prefers-reduced-motion:reduce){
+  .shimmer-title{background:none;-webkit-text-fill-color:currentColor;color:var(--color-ink)}
+}
 .hero-copy p{max-width:480px;margin:0 auto;color:var(--color-text-muted)}
 .hero-visual{position:relative;border-radius:var(--radius-lg);overflow:hidden;height:100%;width:100%;display:flex;align-items:center;justify-content:center}
 .hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease,transform .4s ease}
 
-/* Premium organic product atmosphere — a soft gold glow concentrated behind
-   the bottles, two irregular champagne "ripple" blobs, up to three glassy
-   bubble highlights, and a thin flowing gold line — all real elements (not
-   ::before/::after, since we need more than two independent layers), all
-   pointer-events:none, all animating only transform/opacity, and all PAUSED
-   by default (animation-play-state:paused) — initMotion() in script.js adds
-   .in-view via IntersectionObserver only while the hero is actually on
-   screen, and removes it the moment it scrolls away. Every layer fades out
-   via blur + a transparent gradient edge; nothing here has a hard edge or a
-   background box, so it dissolves into the plain white page. */
+/* Ambient product atmosphere — DailyUI-016-inspired motion language adapted
+   to the Betolla palette only: at most two soft, irregular, blurred blobs
+   (one on phones), drifting and rotating extremely slowly. Real elements
+   (not ::before/::after — kept simple deliberately, per the "max two"
+   budget), pointer-events:none, transform/opacity only, and PAUSED by
+   default (animation-play-state:paused) — initMotion() in script.js toggles
+   .in-view on .hero via IntersectionObserver, so nothing animates while the
+   hero is offscreen. Each blob fades out via blur + a transparent gradient
+   edge; nothing here has a hard edge or a background box. */
 .hero-visual-aura{position:relative;isolation:isolate;height:clamp(210px,52vw,280px)}
-.hv-glow,.hv-ripple,.hv-bubble{position:absolute;z-index:-1;pointer-events:none;animation-play-state:paused}
-.hero-visual-aura.in-view .hv-glow,
-.hero-visual-aura.in-view .hv-ripple,
-.hero-visual-aura.in-view .hv-bubble{animation-play-state:running}
+.hv-blob{position:absolute;z-index:-1;pointer-events:none;animation-play-state:paused}
+.hero.in-view .hv-blob{animation-play-state:running}
 
-.hv-glow{inset:16% 20%;border-radius:50%;filter:blur(30px);opacity:.15;background:radial-gradient(circle,#B8923B 0%,#E8D6A6 40%,transparent 72%);animation:hv-glow-pulse 8s ease-in-out infinite}
-@keyframes hv-glow-pulse{0%,100%{transform:scale(1);opacity:.13}50%{transform:scale(1.08);opacity:.2}}
-
-.hv-ripple{border-radius:42% 58% 63% 37% / 41% 49% 51% 59%;filter:blur(20px)}
-.hv-ripple-a{top:-10%;inset-inline-start:-12%;width:48%;aspect-ratio:1;opacity:.14;background:radial-gradient(circle at 35% 35%,#E8D6A6,transparent 70%);animation:hv-ripple-a 10s ease-in-out infinite}
-.hv-ripple-b{bottom:-14%;inset-inline-end:-10%;width:42%;aspect-ratio:1;opacity:.12;background:radial-gradient(circle at 65% 65%,#F7F0DF,transparent 72%);animation:hv-ripple-b 13s ease-in-out infinite}
-@keyframes hv-ripple-a{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.14) translate(4%,3%)}}
-@keyframes hv-ripple-b{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.12) translate(-4%,-3%)}}
-
-.hv-bubble{border-radius:50%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.9),rgba(232,214,166,.35) 45%,transparent 74%)}
-.hv-bubble-a{top:10%;inset-inline-start:6%;width:10%;aspect-ratio:1;opacity:.6;animation:hv-bubble-float 6s ease-in-out infinite}
-.hv-bubble-b{top:58%;inset-inline-end:12%;width:7%;aspect-ratio:1;opacity:.5;animation:hv-bubble-float 7.5s ease-in-out infinite -2s}
-.hv-bubble-c{top:28%;inset-inline-end:26%;width:5%;aspect-ratio:1;opacity:.45;animation:hv-bubble-float 5.5s ease-in-out infinite -1s}
-@keyframes hv-bubble-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12%) scale(1.1)}}
+.hv-blob-a{top:-16%;inset-inline-start:-14%;width:56%;aspect-ratio:1;opacity:.12;filter:blur(56px);border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;background:radial-gradient(circle at 38% 35%,#B8923B,transparent 68%);animation:hv-blob-a 16s ease-in-out infinite}
+.hv-blob-b{bottom:-18%;inset-inline-end:-12%;width:50%;aspect-ratio:1;opacity:.1;filter:blur(50px);border-radius:63% 37% 41% 59% / 55% 46% 54% 45%;background:radial-gradient(circle at 62% 65%,#6A5218,transparent 70%);animation:hv-blob-b 14s ease-in-out infinite}
+@keyframes hv-blob-a{0%,100%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(4%,3%) rotate(8deg) scale(1.08)}}
+@keyframes hv-blob-b{0%,100%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(-3%,-4%) rotate(-7deg) scale(1.06)}}
 
 .flow-line{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
 .flow-line path{fill:none;stroke:#B8923B;stroke-width:1.6;stroke-linecap:round;opacity:.4;stroke-dashoffset:0}
 
 @media(max-width:599px){
-  .hv-glow{filter:blur(18px)}
-  .hv-ripple{filter:blur(13px)}
-  .hv-ripple-a{width:38%;opacity:.1}
-  .hv-ripple-b{width:34%;opacity:.09}
-  .hv-bubble-c{display:none}
-  .hv-bubble-a{width:8%}
-  .hv-bubble-b{width:6%}
+  .hv-blob-b{display:none}
+  .hv-blob-a{filter:blur(42px);opacity:.09;width:62%}
 }
 
 /* One-time light sweep — used for the product image (champagne tint) and the
@@ -164,22 +168,30 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .ba-handle::before{content:"";position:absolute;top:0;bottom:0;inset-inline-start:-1px;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .ba-handle::after{content:"↔";position:absolute;top:50%;inset-inline-start:50%;transform:translate(-50%,-50%);width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--color-ink);color:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 4px 12px rgba(83,63,22,.3);cursor:ew-resize}
 .ba-handle:focus-visible::after{outline:3px solid var(--color-accent);outline-offset:2px}
-/* Draws attention on load, then stops for good the instant the user drags or
-   uses the arrow keys (script.js removes .pulse in both handlers). Runs a
-   fixed 3 iterations even if nothing stops it first. */
-.ba-handle.pulse::after{animation:handle-pulse .85s ease-in-out 2}
-@keyframes handle-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 0 rgba(158,137,89,.55)}50%{transform:translate(-50%,-50%) scale(1.12);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 12px rgba(158,137,89,0)}}
+/* One visible spring pulse once the slider scrolls into view, then stops for
+   good the instant the user drags or uses the arrow keys (script.js removes
+   .pulse in both handlers, and only adds it via an IntersectionObserver —
+   see initMotion()). */
+.ba-handle.pulse::after{animation:handle-pulse 1s cubic-bezier(.34,1.4,.64,1) 1}
+@keyframes handle-pulse{
+  0%{transform:translate(-50%,-50%) scale(1);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 0 rgba(158,137,89,.55)}
+  45%{transform:translate(-50%,-50%) scale(1.22);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 14px rgba(158,137,89,0)}
+  100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 0 rgba(158,137,89,0)}
+}
 
 /* =========================================================
    Subtle motion — entrance only, respects reduced-motion below
    ========================================================= */
-@keyframes gentle-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+/* A restrained spring: opacity+translate+scale settling with a very small
+   overshoot (cubic-bezier(.34,1.35,.64,1) — a toned-down "ease-out-back"),
+   not a cartoonish bounce. */
+@keyframes gentle-in{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
 /* Hero title/description first, then the product image, then the comparison
-   slider — landing 120ms apart instead of all at once (deliberately an
+   slider — landing ~120ms apart instead of all at once (deliberately an
    obvious stagger, not a barely-there one). */
-.hero-copy{animation:gentle-in .6s ease both}
-.hero-visual-aura{animation:gentle-in .6s ease .12s both}
-.ba-compare{animation:gentle-in .6s ease .24s both}
+.hero-copy{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) both}
+.hero-visual-aura{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .12s both}
+.ba-compare{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .24s both}
 @media(hover:hover) and (pointer:fine){.hero-visual:hover img{transform:scale(1.02)}}
 .success-panel{animation:gentle-in .4s ease both}
 
@@ -188,7 +200,7 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
    this applies and the content is simply visible by default. An obvious 22px
    rise + a clearly-below-full starting opacity so the reveal is unmistakable,
    not a barely-there fade. */
-.js-reveal-ready .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
+.js-reveal-ready .reveal{opacity:0;transform:translateY(22px) scale(.98);transition:opacity .55s ease,transform .55s cubic-bezier(.34,1.35,.64,1)}
 .js-reveal-ready .reveal.is-visible{opacity:1;transform:none}
 .js-reveal-ready .package-card.reveal:nth-child(2){transition-delay:.12s}
 
@@ -222,15 +234,35 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .package-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:18px 20px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
 .package-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover)}
 .package-card:active{transform:scale(.98)}
-.package-card.selected{border-color:var(--color-accent);background:var(--color-tint);box-shadow:0 0 0 3px rgba(158,137,89,.18),var(--shadow-card-hover)}
-/* One-shot glow + border shimmer the moment a card BECOMES selected (see
-   triggerCardGlow() in script.js) — not a continuous effect. */
-.package-card.just-selected{animation:selected-glow 1s ease}
+/* Soft external gold glow + a faint internal champagne gradient, replacing
+   the previous flat-tint fill + heavy solid border. */
+.package-card.selected{border-color:rgba(184,146,59,.4);background:linear-gradient(165deg,#fff 0%,var(--color-tint) 130%);box-shadow:0 0 0 1px rgba(184,146,59,.16),0 12px 28px rgba(184,146,59,.22),var(--shadow-card-hover)}
+/* One-shot glow + border shimmer + a small spring lift the moment a card
+   BECOMES selected (see triggerCardGlow() in script.js) — not continuous. */
+.package-card.just-selected{animation:selected-glow 1s ease,card-spring-lift .5s cubic-bezier(.34,1.35,.64,1)}
 .package-card.just-selected::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(232,214,166,.6) 50%,transparent 70%);background-size:250% 100%;background-position:-125% 0;animation:border-shimmer .9s ease}
-@keyframes selected-glow{0%{box-shadow:0 0 0 0 rgba(184,146,59,.35),0 0 0 3px rgba(158,137,89,.18),var(--shadow-card-hover)}70%{box-shadow:0 0 0 14px rgba(184,146,59,0),0 0 0 3px rgba(158,137,89,.18),var(--shadow-card-hover)}100%{box-shadow:0 0 0 0 rgba(184,146,59,0),0 0 0 3px rgba(158,137,89,.18),var(--shadow-card-hover)}}
+@keyframes selected-glow{0%{box-shadow:0 0 0 0 rgba(184,146,59,.35),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}70%{box-shadow:0 0 0 14px rgba(184,146,59,0),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}100%{box-shadow:0 0 0 0 rgba(184,146,59,0),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}}
+@keyframes card-spring-lift{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-6px) scale(1.015)}100%{transform:translateY(0) scale(1)}}
 @keyframes border-shimmer{0%{background-position:-125% 0}100%{background-position:125% 0}}
-.selected-check{position:absolute;top:12px;inset-inline-end:12px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--color-ink);color:#fff;font-size:12px;font-weight:800;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .2s ease}
-.package-card.selected .selected-check{opacity:1;transform:scale(1)}
+.selected-check{position:absolute;top:12px;inset-inline-end:12px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--color-ink);color:#fff;font-size:12px;font-weight:800;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.5,.64,1),background-color .2s ease}
+.package-card.selected .selected-check{opacity:1;transform:scale(1);background:var(--color-accent)}
+.package-card.just-selected .selected-check{animation:check-pop .5s cubic-bezier(.34,1.5,.64,1)}
+@keyframes check-pop{0%{transform:scale(.6)}55%{transform:scale(1.25)}80%{transform:scale(.92)}100%{transform:scale(1)}}
+
+/* Lightweight one-shot particle burst — plain DOM spans, CSS-driven, no
+   canvas/library. spawnParticles() in script.js creates ~8-12 of these
+   inside a short-lived .particle-burst container (removed after the
+   longest particle's animation ends), positioned at the checkmark or the
+   success panel. Disabled entirely under prefers-reduced-motion (script.js
+   never calls spawnParticles() when reduceMotion is true). */
+.particle-burst{position:absolute;inset:0;pointer-events:none}
+.particle{position:absolute;top:50%;left:50%;width:var(--size,6px);height:var(--size,6px);background:var(--pcolor,#B8923B);opacity:0;transform:translate(-50%,-50%);animation:particle-fly var(--dur,650ms) cubic-bezier(.2,.7,.3,1) var(--delay,0ms) forwards}
+.particle.is-square{border-radius:2px}
+.particle.is-circle{border-radius:50%}
+@keyframes particle-fly{
+  0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg) scale(1)}
+  100%{opacity:0;transform:translate(calc(-50% + var(--tx,20px)),calc(-50% + var(--ty,-20px))) rotate(var(--rot,180deg)) scale(.3)}
+}
 .badge{display:inline-block;background:var(--color-ink);color:#fff;padding:4px 11px;border-radius:var(--radius-pill);font-size:11px;font-weight:800}
 .package-name{font-size:17px;font-weight:800;margin-top:2px}
 .package-includes{color:var(--color-text-muted);font-size:14px}
@@ -270,7 +302,7 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .form-status{margin:0;font-size:14px;text-align:center;min-height:18px}
 .form-status.error{color:#b83d3d;font-weight:700}
 .form-status.success{color:#1fa463;font-weight:700}
-.success-panel{display:flex;flex-direction:column;align-items:center;gap:6px;background:#f2f9f5;border:1px solid #bfe3cc;border-radius:14px;padding:20px;text-align:center}
+.success-panel{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;background:#f2f9f5;border:1px solid #bfe3cc;border-radius:14px;padding:20px;text-align:center}
 .success-panel[hidden]{display:none}
 .success-title{margin:0 0 4px;font-size:18px;font-weight:800;color:#1fa463}
 .success-row{margin:0;font-size:16px}

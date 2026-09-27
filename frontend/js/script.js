@@ -52,10 +52,47 @@ function triggerCardGlow(card) {
     () => card.classList.remove("just-selected"),
     { once: true }
   );
+  const check = card.querySelector(".selected-check");
+  if (check) spawnParticles(check, 10);
 }
 
 function stopHandlePulse() {
   $("#baHandle")?.classList.remove("pulse");
+}
+
+// Lightweight one-shot DOM/CSS particle burst — no canvas, no library. Spawns
+// `count` small circle/square spans inside a short-lived container appended
+// to `originEl` (which must be position:relative/absolute so the burst's
+// inset:0 container lines up with it), each flying out at a randomized angle
+///distance/timing, then removes the whole container once the slowest
+// particle has finished. Never called when reduceMotion is true.
+function spawnParticles(originEl, count = 10) {
+  if (reduceMotion || !originEl) return;
+  const colors = ["#B8923B", "#E8D6A6", "#6A5218", "#F7F0DF"];
+  const burst = document.createElement("span");
+  burst.className = "particle-burst";
+  burst.setAttribute("aria-hidden", "true");
+  let maxLife = 0;
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("span");
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 22 + Math.random() * 26;
+    const size = 4 + Math.random() * 4;
+    const dur = 500 + Math.random() * 350;
+    const delay = Math.random() * 120;
+    particle.className = "particle " + (Math.random() > 0.5 ? "is-circle" : "is-square");
+    particle.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+    particle.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+    particle.style.setProperty("--rot", `${Math.round((Math.random() - 0.5) * 360)}deg`);
+    particle.style.setProperty("--size", `${size}px`);
+    particle.style.setProperty("--dur", `${dur}ms`);
+    particle.style.setProperty("--delay", `${delay}ms`);
+    particle.style.setProperty("--pcolor", colors[i % colors.length]);
+    burst.appendChild(particle);
+    maxLife = Math.max(maxLife, dur + delay);
+  }
+  originEl.appendChild(burst);
+  window.setTimeout(() => burst.remove(), maxLife + 150);
 }
 
 // --- Content -----------------------------------------------------------
@@ -386,6 +423,9 @@ function showSuccess(order) {
   $("#successOrderNumber").textContent = order.orderNumber;
   $("#successPanel").hidden = false;
   $$("#orderForm input, #orderForm select, #orderForm textarea, #orderForm button[data-qty]").forEach((el) => (el.disabled = true));
+  // Purely decorative — fires only on a genuine success, never on loading or
+  // error, and never touches the order/network result above.
+  spawnParticles($("#successPanel"), 12);
 }
 
 $("#orderForm").addEventListener("submit", async (e) => {
@@ -546,18 +586,19 @@ renderPackages();
   );
   sheenTargets.forEach((el) => sheenObserver.observe(el));
 
-  // Product atmosphere (glow/ripples/bubbles): only animate while the hero
-  // is actually on screen — paused the instant it scrolls away, resumed the
-  // instant it scrolls back (see .hero-visual-aura.in-view in styles.css).
-  const heroAura = $("#heroAura");
-  if (heroAura) {
-    const auraObserver = new IntersectionObserver(
+  // Ambient blobs + headline shimmer: only animate while the hero is
+  // actually on screen — paused the instant it scrolls away, resumed the
+  // instant it scrolls back (see .hero.in-view in styles.css, which gates
+  // both .hv-blob and .shimmer-title).
+  const heroSection = $(".hero");
+  if (heroSection) {
+    const heroObserver = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => heroAura.classList.toggle("in-view", entry.isIntersecting));
+        entries.forEach((entry) => heroSection.classList.toggle("in-view", entry.isIntersecting));
       },
       { threshold: 0 }
     );
-    auraObserver.observe(heroAura);
+    heroObserver.observe(heroSection);
   }
 
   // Flowing gold lines: draw themselves once via stroke-dasharray/dashoffset
@@ -590,12 +631,24 @@ renderPackages();
     });
   });
 
-  // Gentle pulse on the comparison handle to draw attention, stopping for good
-  // the moment the user actually touches/drags/keys it (see stopHandlePulse(),
-  // wired into the slider's own drag/keydown handlers above).
+  // One spring pulse on the comparison handle once the slider actually
+  // scrolls into view (not a fixed delay from page load), stopping for good
+  // the moment the user touches/drags/keys it (see stopHandlePulse(), wired
+  // into the slider's own drag/keydown handlers above).
   const handle = $("#baHandle");
-  if (handle) {
-    window.setTimeout(() => handle.classList.add("pulse"), 1200);
-    window.setTimeout(() => handle.classList.remove("pulse"), 1200 + 850 * 2 + 300);
+  const compare = $("#baCompare");
+  if (handle && compare) {
+    const pulseObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          handle.classList.add("pulse");
+          window.setTimeout(() => handle.classList.remove("pulse"), 1100);
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    pulseObserver.observe(compare);
   }
 })();
