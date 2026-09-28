@@ -118,8 +118,6 @@ const content = {
     chooseGovernorate: "اختاري",
     area: "المنطقة والعنوان",
     quantity: "الكمية",
-    notes: "ملاحظات",
-    optional: "(اختياري)",
     summaryTitle: "ملخص الطلب",
     total: "الإجمالي",
     submitOrder: "تأكيد الطلب",
@@ -161,8 +159,6 @@ const content = {
     chooseGovernorate: "Choose",
     area: "Area & detailed address",
     quantity: "Quantity",
-    notes: "Notes",
-    optional: "(optional)",
     summaryTitle: "Order summary",
     total: "Total",
     submitOrder: "Confirm order",
@@ -450,7 +446,12 @@ $("#orderForm").addEventListener("submit", async (e) => {
     governorate: f.governorate.value,
     governorateLabel: governorateOption ? governorateOption.textContent : "",
     areaAddress: f.area.value.trim(),
-    notes: f.notes.value.trim(),
+    // The Notes field was removed from the form; the backend's own
+    // validateOrder() already treats notes as optional and defaults a
+    // missing value to "" (see backend/functions/src/validateOrder.js), so
+    // sending "" here explicitly just keeps the payload shape unchanged
+    // rather than relying on that default.
+    notes: "",
     language: lang,
   };
 
