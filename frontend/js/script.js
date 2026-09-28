@@ -349,6 +349,10 @@ function setLanguage(next) {
   clearFieldErrors();
   $("#baCompare").setAttribute("aria-label", content[lang].compareAriaLabel);
   $("#baHandle").setAttribute("aria-label", content[lang].compareHandleLabel);
+  // Before/after label widths change with the text (AR vs EN, and the
+  // data-i18n loop above already swapped it) — let the slider recompute
+  // which labels currently fit their own revealed region.
+  document.dispatchEvent(new Event("betolla:langchange"));
 }
 $("#langToggle").addEventListener("click", () => setLanguage(lang === "ar" ? "en" : "ar"));
 
@@ -471,14 +475,51 @@ $("#orderForm").addEventListener("submit", async (e) => {
 (function initCompareSlider() {
   const frame = $("#baFrame");
   const handle = $("#baHandle");
+  const tagBefore = $(".ba-tag-before");
+  const tagAfter = $(".ba-tag-after");
   if (!frame || !handle) return;
   let pos = 50;
+
+  // A tag's own corner (14px inset) always sits inside its own image's
+  // revealed region — the "before" region always starts at the frame's own
+  // start edge and the "after" region always ends at its end edge, whatever
+  // the handle position — so a tag never needs to move, only hide, to stay
+  // off the opposite image. Hide it the moment its region can no longer fit
+  // its current rendered width (+14px inset +4px safety margin); show it
+  // again once there's room. Re-measured on every position change, on
+  // resize (frame width changes across breakpoints), and after a language
+  // switch (label text width changes) — never on a timer, so it's always
+  // exact for the frame's actual current size.
+  function updateTagVisibility() {
+    if (!tagBefore || !tagAfter) return;
+    const frameWidth = frame.getBoundingClientRect().width;
+    if (!frameWidth) return;
+    const beforeRegionPx = (frameWidth * pos) / 100;
+    const afterRegionPx = (frameWidth * (100 - pos)) / 100;
+    const margin = 14 + 4; // the tag's own inset-inline offset + a small safety gap
+    tagBefore.classList.toggle("ba-tag-hidden", beforeRegionPx < tagBefore.offsetWidth + margin);
+    tagAfter.classList.toggle("ba-tag-hidden", afterRegionPx < tagAfter.offsetWidth + margin);
+  }
 
   function setPos(next) {
     pos = Math.max(0, Math.min(100, next));
     frame.style.setProperty("--ba-pos", String(pos));
     handle.setAttribute("aria-valuenow", String(Math.round(pos)));
+    updateTagVisibility();
   }
+
+  window.addEventListener("resize", updateTagVisibility, { passive: true });
+  document.addEventListener("betolla:langchange", updateTagVisibility);
+  // .hero-copy and .ba-compare both scale in on load (see the gentle-in
+  // entrance animation in styles.css) — #baFrame is a descendant of both, so
+  // measuring it mid-animation (frame.getBoundingClientRect() inside
+  // updateTagVisibility) reads a transiently shrunk width and can hide a
+  // label that actually fits once things settle. Recompute once the slower
+  // of the two (.ba-compare, which starts after a delay) finishes, plus a
+  // safety-net timeout in case that event is ever missed.
+  const compareEl = $(".ba-compare");
+  if (compareEl) compareEl.addEventListener("animationend", updateTagVisibility, { once: true });
+  window.setTimeout(updateTagVisibility, 900);
 
   function posFromClientX(clientX) {
     const rect = frame.getBoundingClientRect();

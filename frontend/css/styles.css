@@ -158,10 +158,17 @@ html[dir="rtl"] .ba-before{clip-path:inset(0 0 0 calc(100% - var(--ba-pos) * 1%)
 /* Tags live at the frame level (siblings of the clipped panels, not children of them) and are
    always painted above both photo layers, so the reveal position can never clip them or bury
    them under the opposing layer — pinned to each side's own logical corner so they mirror
-   correctly for RTL, and never centered on the full frame (centering both would stack them). */
-.ba-tag{position:absolute;bottom:14px;z-index:3;pointer-events:none;background:rgba(255,255,255,.92);color:var(--color-ink);padding:clamp(5px,1.6vw,6px) clamp(9px,3vw,12px);border-radius:var(--radius-pill);font-size:clamp(11px,3.2vw,13px);font-weight:700;white-space:normal;max-width:calc(50% - 20px);text-align:center;line-height:1.25;box-shadow:0 2px 8px rgba(83,63,22,.12)}
+   correctly for RTL, and never centered on the full frame (centering both would stack them).
+   Each tag's own corner sits inside the region its image is actually revealed in (the "before"
+   region always starts at the frame's start edge, the "after" region always ends at the frame's
+   end edge, regardless of handle position) — so a tag only ever needs to fully HIDE, never
+   reposition, to stay off the opposite image: initCompareSlider() in script.js measures the
+   current region width against the tag's own rendered width on every drag/keyboard/resize/
+   language change and toggles .ba-tag-hidden the moment it would no longer fit. */
+.ba-tag{position:absolute;bottom:14px;z-index:3;pointer-events:none;background:rgba(255,255,255,.92);color:var(--color-ink);padding:clamp(5px,1.6vw,6px) clamp(9px,3vw,12px);border-radius:var(--radius-pill);font-size:clamp(11px,3.2vw,13px);font-weight:700;white-space:normal;max-width:calc(50% - 20px);text-align:center;line-height:1.25;box-shadow:0 2px 8px rgba(83,63,22,.12);opacity:1;transform:none;transition:opacity .25s ease,transform .25s ease}
 .ba-tag-before{inset-inline-start:14px}
 .ba-tag-after{inset-inline-end:14px}
+.ba-tag.ba-tag-hidden{opacity:0;transform:translateY(4px) scale(.96)}
 .ba-handle{position:absolute;top:0;bottom:0;inset-inline-start:calc(var(--ba-pos) * 1%);transform:translateX(-50%);display:flex;align-items:center;width:0}
 html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .ba-handle::before{content:"";position:absolute;top:0;bottom:0;inset-inline-start:-1px;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
