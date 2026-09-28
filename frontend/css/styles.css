@@ -107,34 +107,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(prefers-reduced-motion:reduce){
   .shimmer-title{background:none;-webkit-text-fill-color:currentColor;color:var(--color-ink)}
 }
-.hero-visual{position:relative;border-radius:var(--radius-lg);overflow:hidden;height:100%;width:100%;display:flex;align-items:center;justify-content:center}
-.hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease,transform .4s ease}
-
-/* Ambient product atmosphere — DailyUI-016-inspired motion language adapted
-   to the Betolla palette only: at most two soft, irregular, blurred blobs
-   (one on phones), drifting and rotating extremely slowly. Real elements
-   (not ::before/::after — kept simple deliberately, per the "max two"
-   budget), pointer-events:none, transform/opacity only, and PAUSED by
-   default (animation-play-state:paused) — initMotion() in script.js toggles
-   .in-view on .hero via IntersectionObserver, so nothing animates while the
-   hero is offscreen. Each blob fades out via blur + a transparent gradient
-   edge; nothing here has a hard edge or a background box. */
-.hero-visual-aura{position:relative;isolation:isolate;height:clamp(210px,52vw,280px)}
-.hv-blob{position:absolute;z-index:-1;pointer-events:none;animation-play-state:paused}
-.hero.in-view .hv-blob{animation-play-state:running}
-
-.hv-blob-a{top:-16%;inset-inline-start:-14%;width:56%;aspect-ratio:1;opacity:.12;filter:blur(56px);border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;background:radial-gradient(circle at 38% 35%,#B8923B,transparent 68%);animation:hv-blob-a 16s ease-in-out infinite}
-.hv-blob-b{bottom:-18%;inset-inline-end:-12%;width:50%;aspect-ratio:1;opacity:.1;filter:blur(50px);border-radius:63% 37% 41% 59% / 55% 46% 54% 45%;background:radial-gradient(circle at 62% 65%,#6A5218,transparent 70%);animation:hv-blob-b 14s ease-in-out infinite}
-@keyframes hv-blob-a{0%,100%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(4%,3%) rotate(8deg) scale(1.08)}}
-@keyframes hv-blob-b{0%,100%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(-3%,-4%) rotate(-7deg) scale(1.06)}}
-
 .flow-line{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
 .flow-line path{fill:none;stroke:#B8923B;stroke-width:1.6;stroke-linecap:round;opacity:.4;stroke-dashoffset:0}
-
-@media(max-width:599px){
-  .hv-blob-b{display:none}
-  .hv-blob-a{filter:blur(42px);opacity:.09;width:62%}
-}
 
 /* One-time light sweep — used for the product image (champagne tint) and the
    two real CTA buttons (default white tint). Runs once via JS adding .run
@@ -192,13 +166,10 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
    overshoot (cubic-bezier(.34,1.35,.64,1) — a toned-down "ease-out-back"),
    not a cartoonish bounce. */
 @keyframes gentle-in{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
-/* Hero title/description first, then the product image, then the comparison
-   slider — landing ~120ms apart instead of all at once (deliberately an
-   obvious stagger, not a barely-there one). */
+/* Hero title first, then the comparison slider — landing ~120ms apart
+   instead of both at once (deliberately an obvious stagger). */
 .hero-copy{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) both}
-.hero-visual-aura{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .12s both}
-.ba-compare{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .24s both}
-@media(hover:hover) and (pointer:fine){.hero-visual:hover img{transform:scale(1.02)}}
+.ba-compare{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .12s both}
 .success-panel{animation:gentle-in .4s ease both}
 
 /* One-time scroll reveal (package cards, the order form, the footer) — JS-gated
@@ -240,7 +211,7 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 /* Mobile: image left, details right (keeps each card short so both remain
    compact and scannable without an oversized vertical product photo).
    Tablet+ below flips this to image-on-top, two columns side by side. */
-.package-card{position:relative;display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:14px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
+.package-card{position:relative;display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:14px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
 .package-media{position:relative;width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--color-tint)}
 .package-media img{width:100%;height:100%;object-fit:cover;display:block}
 .package-body{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
@@ -276,10 +247,10 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
   100%{opacity:0;transform:translate(calc(-50% + var(--tx,20px)),calc(-50% + var(--ty,-20px))) rotate(var(--rot,180deg)) scale(.3)}
 }
 .badge{position:absolute;top:6px;inset-inline-start:6px;display:inline-block;background:var(--color-ink);color:#fff;padding:3px 8px;border-radius:var(--radius-pill);font-size:9.5px;font-weight:800;line-height:1.4}
-.package-name{font-size:16px;font-weight:800}
-.package-includes{color:var(--color-text-muted);font-size:13px}
+.package-name{font-size:17px;font-weight:800;padding-inline-end:30px}
+.package-includes{color:var(--color-text-muted);font-size:13.5px}
 .package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:2px}
-.package-card .price strong{font-size:clamp(20px,4.5vw,var(--text-price));color:var(--color-ink);font-weight:800}
+.package-card .price strong{font-size:clamp(20px,4.6vw,var(--text-price));color:var(--color-ink);font-weight:800}
 .package-card .price del{color:var(--color-text-muted);font-size:clamp(15px,1vw + 11px,20px);font-weight:600}
 /* Delivery messaging inside each card: a thin gold divider, a small truck
    icon, and clear semibold text — replaces the old plain "شامل التوصيل"
@@ -355,9 +326,9 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
      tall (confirmed while testing: it pushed the card mostly below the
      fold and past the scroll-reveal's intersection threshold). Staying
      horizontal keeps both cards compact and comparable side by side. */
-  .package-card{grid-template-columns:132px 1fr;gap:16px;padding:18px}
+  .package-card{grid-template-columns:140px 1fr;gap:16px;padding:18px}
   .badge{font-size:10px;padding:3px 9px}
-  .package-name{font-size:18px}
+  .package-name{font-size:19px}
   .order-form{grid-template-columns:repeat(2,1fr);padding:32px}
   footer{flex-direction:row;justify-content:space-between;text-align:start}
 }
@@ -370,11 +341,13 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
   .logo-window{width:clamp(150px,12vw,210px)}
   html{scroll-padding-top:96px}
   .section{padding:52px 20px}
-  .hero{flex-direction:row;align-items:center;text-align:start;gap:clamp(24px,4vw,56px);padding-block:clamp(28px,4vw,52px)}
-  .hero-copy{flex:1.1}
-  .hero-visual-aura{flex:1;height:auto;aspect-ratio:1}
-  .hero-visual img{object-fit:cover;object-position:center 38%}
-  .ba-compare{margin-inline:0;max-width:none}
+  /* No second column any more (the standalone hero product image was
+     removed — the package cards already carry their own correctly-matched
+     product photos), so the hero stays a centered single column at every
+     width, just with more breathing room than mobile. */
+  .hero{padding-block:clamp(28px,4vw,48px) clamp(16px,2vw,24px)}
+  .hero-copy{max-width:680px;margin-inline:auto}
+  .ba-compare{margin-inline:auto;max-width:640px}
   .section-heading h2{font-size:var(--text-heading)}
 }
 

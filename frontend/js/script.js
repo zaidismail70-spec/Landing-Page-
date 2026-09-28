@@ -191,12 +191,10 @@ const PACKAGES = {
   "plasma-complete": {
     unitPrice: 30,
     oldUnitPrice: 40,
-    image: "assets/plasma-complete-1080.webp",
   },
   "plasma-duo": {
     unitPrice: 20,
     oldUnitPrice: 25,
-    image: "assets/plasma-duo-1080.webp",
   },
 };
 
@@ -307,9 +305,6 @@ function updateSummary() {
   $("#summaryPackageName").textContent = name;
   $("#summaryQty").textContent = `× ${quantity}`;
   $("#summaryTotal").textContent = `${pkg.unitPrice * quantity} ${content[lang].jod}`;
-  const img = $("#packageImage");
-  img.src = pkg.image;
-  img.alt = name;
 }
 
 // --- Language switching ---------------------------------------------------
@@ -614,7 +609,7 @@ renderPackages();
   window.setTimeout(() => revealTargets.forEach((el) => el.classList.add("is-visible")), 4000);
 
   // One-time light sweep once the product image / CTA buttons enter view.
-  const sheenTargets = [$("#heroVisual"), $(".mini-cta"), $("#submitBtn")].filter(Boolean);
+  const sheenTargets = [$(".mini-cta"), $("#submitBtn")].filter(Boolean);
   const sheenObserver = new IntersectionObserver(
     (entries, obs) => {
       entries.forEach((entry) => {
@@ -627,10 +622,9 @@ renderPackages();
   );
   sheenTargets.forEach((el) => sheenObserver.observe(el));
 
-  // Ambient blobs + headline shimmer: only animate while the hero is
-  // actually on screen — paused the instant it scrolls away, resumed the
-  // instant it scrolls back (see .hero.in-view in styles.css, which gates
-  // both .hv-blob and .shimmer-title).
+  // Headline shimmer: only animates while the hero is actually on screen —
+  // paused the instant it scrolls away, resumed the instant it scrolls back
+  // (see .hero.in-view in styles.css).
   const heroSection = $(".hero");
   if (heroSection) {
     const heroObserver = new IntersectionObserver(
