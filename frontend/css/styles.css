@@ -84,7 +84,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    Hero — compact on mobile, image never dominates the screen
    ========================================================= */
 .hero{display:flex;flex-direction:column;gap:16px;padding-block:16px 8px;text-align:center}
-.hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
+.hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0;letter-spacing:-.01em;font-weight:800}
 /* Shimmer only on the hero headline, never every heading. The solid
    --color-ink fallback above already applies when background-clip:text
    isn't supported (the @supports gate below never fires), so the text is
@@ -107,7 +107,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(prefers-reduced-motion:reduce){
   .shimmer-title{background:none;-webkit-text-fill-color:currentColor;color:var(--color-ink)}
 }
-.hero-copy p{max-width:480px;margin:0 auto;color:var(--color-text-muted)}
 .hero-visual{position:relative;border-radius:var(--radius-lg);overflow:hidden;height:100%;width:100%;display:flex;align-items:center;justify-content:center}
 .hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease,transform .4s ease}
 
@@ -150,7 +149,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Before/after comparison — drag, touch, or arrow keys.
    ========================================================= */
-.ba-compare{margin:14px auto 0;max-width:420px}
+.ba-compare{margin:10px auto 0;max-width:420px}
 .ba-frame{position:relative;overflow:hidden;border-radius:var(--radius-md);aspect-ratio:16/10;box-shadow:var(--shadow-card-rest);user-select:none;-webkit-user-select:none;touch-action:none}
 .ba-panel{position:absolute;inset:0}
 .ba-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%;background:var(--color-tint)}
@@ -231,7 +230,13 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
    Package selector — stacked, full-width, one tap to select
    ========================================================= */
 .package-grid{display:grid;grid-template-columns:1fr;gap:14px}
-.package-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:18px 20px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
+/* Mobile: image left, details right (keeps each card short so both remain
+   compact and scannable without an oversized vertical product photo).
+   Tablet+ below flips this to image-on-top, two columns side by side. */
+.package-card{position:relative;display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:14px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
+.package-media{position:relative;width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--color-tint)}
+.package-media img{width:100%;height:100%;object-fit:cover;display:block}
+.package-body{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
 .package-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover)}
 .package-card:active{transform:scale(.98)}
 /* Soft external gold glow + a faint internal champagne gradient, replacing
@@ -263,13 +268,22 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
   0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg) scale(1)}
   100%{opacity:0;transform:translate(calc(-50% + var(--tx,20px)),calc(-50% + var(--ty,-20px))) rotate(var(--rot,180deg)) scale(.3)}
 }
-.badge{display:inline-block;background:var(--color-ink);color:#fff;padding:4px 11px;border-radius:var(--radius-pill);font-size:11px;font-weight:800}
-.package-name{font-size:17px;font-weight:800;margin-top:2px}
-.package-includes{color:var(--color-text-muted);font-size:14px}
-.package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:6px}
-.package-card .price strong{font-size:var(--text-price);color:var(--color-ink);font-weight:800}
-.package-card .price del{color:var(--color-text-muted);font-size:clamp(18px,1vw + 14px,20px);font-weight:600}
-.delivery-line{color:var(--color-ink);font-size:13px;font-weight:700}
+.badge{position:absolute;top:6px;inset-inline-start:6px;display:inline-block;background:var(--color-ink);color:#fff;padding:3px 8px;border-radius:var(--radius-pill);font-size:9.5px;font-weight:800;line-height:1.4}
+.package-name{font-size:16px;font-weight:800}
+.package-includes{color:var(--color-text-muted);font-size:13px}
+.package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.package-card .price strong{font-size:clamp(20px,4.5vw,var(--text-price));color:var(--color-ink);font-weight:800}
+.package-card .price del{color:var(--color-text-muted);font-size:clamp(15px,1vw + 11px,20px);font-weight:600}
+/* Delivery messaging inside each card: a thin gold divider, a small truck
+   icon, and clear semibold text — replaces the old plain "شامل التوصيل"
+   line with something that reads as a deliberate reassurance, not a banner. */
+.delivery-note{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(184,146,59,.35);color:var(--color-ink);font-size:12px;font-weight:600;width:100%}
+.delivery-note .delivery-icon{width:15px;height:15px;flex-shrink:0;color:var(--color-accent)}
+.package-card.selected .delivery-note{border-top-color:rgba(184,146,59,.6);font-weight:800}
+.package-card.selected .delivery-note .delivery-icon{color:var(--color-ink)}
+/* Order-summary delivery line reuses the same icon language for consistency. */
+.delivery-line{display:flex;align-items:center;gap:6px;color:var(--color-ink);font-size:13px;font-weight:700}
+.delivery-line .delivery-icon{width:14px;height:14px;flex-shrink:0;color:var(--color-accent)}
 
 /* =========================================================
    Order form — one column, full-width inputs
@@ -329,6 +343,14 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
 @media(min-width:640px){
   .section{padding:40px 24px}
   .package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Same image-left/body-right layout as mobile, just a bigger thumbnail —
+     a full-width square product photo here would make each card ~650px
+     tall (confirmed while testing: it pushed the card mostly below the
+     fold and past the scroll-reveal's intersection threshold). Staying
+     horizontal keeps both cards compact and comparable side by side. */
+  .package-card{grid-template-columns:132px 1fr;gap:16px;padding:18px}
+  .badge{font-size:10px;padding:3px 9px}
+  .package-name{font-size:18px}
   .order-form{grid-template-columns:repeat(2,1fr);padding:32px}
   footer{flex-direction:row;justify-content:space-between;text-align:start}
 }
@@ -343,7 +365,6 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
   .section{padding:52px 20px}
   .hero{flex-direction:row;align-items:center;text-align:start;gap:clamp(24px,4vw,56px);padding-block:clamp(28px,4vw,52px)}
   .hero-copy{flex:1.1}
-  .hero-copy p{margin:0 0 0}
   .hero-visual-aura{flex:1;height:auto;aspect-ratio:1}
   .hero-visual img{object-fit:cover;object-position:center 38%}
   .ba-compare{margin-inline:0;max-width:none}
