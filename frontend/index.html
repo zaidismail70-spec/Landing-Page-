@@ -29,50 +29,59 @@
 <body>
 <header class="nav" id="top">
 <a aria-label="Betolla Plasma home" class="brand" href="#top">
-<span class="logo-window"><img alt="BETOLLA Cosmetics" class="brand-logo" fetchpriority="high" height="500" loading="eager" src="assets/logo.png" width="500"/></span>
+<span class="logo-window"><img alt="BETOLLA Cosmetics" class="brand-logo" fetchpriority="high" height="198" loading="eager" src="assets/logo-header.png" width="411"/></span>
 </a>
 <div class="nav-actions">
 <button aria-label="Switch language" class="lang" id="langToggle" type="button">EN</button>
-<a class="mini-cta" data-i18n="orderNow" href="#order">اطلبي الآن</a>
+<a class="mini-cta sheen-el" data-i18n="orderNow" href="#order">اطلبي الآن</a>
 </div>
 </header>
 <main>
 <section aria-labelledby="heroTitle" class="hero section">
 <div class="hero-copy">
-<h1 data-i18n="heroHeadline" id="heroTitle">روتين بلازما الكامل لشعر أنعم وأقوى</h1>
-<p data-i18n="heroSub">منتجات بلازما الأربعة في بكج واحد، بسعر واحد يشمل التوصيل.</p>
+<h1 class="shimmer-title" data-i18n="heroHeadline" id="heroTitle">روتين بلازما الكامل لشعر أنعم وأقوى</h1>
 <div aria-label="قارني قبل وبعد استخدام بكج بلازما" class="ba-compare" id="baCompare">
 <div class="ba-frame" id="baFrame" style="--ba-pos:50">
-<div class="ba-panel ba-after"><span class="ba-tag" data-i18n="afterLabel">بعد استخدام بكج بلازما</span></div>
-<div class="ba-panel ba-before" id="baBeforePanel"><span class="ba-tag" data-i18n="beforeLabel">قبل استخدام بكج بلازما</span></div>
+<div class="ba-panel ba-after"><img alt="بعد استخدام بكج بلازما" data-i18n-alt="afterLabel" fetchpriority="high" height="1181" src="assets/images/plasma-hair-after.webp" width="1332"/></div>
+<div class="ba-panel ba-before" id="baBeforePanel"><img alt="قبل استخدام بكج بلازما" data-i18n-alt="beforeLabel" fetchpriority="high" height="1180" src="assets/images/plasma-hair-before.webp" width="1333"/></div>
+<span class="ba-tag ba-tag-after" data-i18n="afterLabel">بعد استخدام بكج بلازما</span>
+<span class="ba-tag ba-tag-before" data-i18n="beforeLabel">قبل استخدام بكج بلازما</span>
 <div aria-label="سحب للمقارنة بين قبل وبعد" aria-orientation="horizontal" aria-valuemax="100" aria-valuemin="0" aria-valuenow="50" class="ba-handle" id="baHandle" role="slider" tabindex="0"><span aria-hidden="true">↔</span></div>
 </div>
 </div>
 </div>
-<div class="hero-visual">
-<img alt="بكج بلازما الكامل" fetchpriority="high" height="1254" id="packageImage" src="assets/plasma-complete-1080.webp" width="1254"/>
-</div>
 </section>
 
 <section class="packages section" id="packages">
-<div class="section-heading">
+<div class="section-heading has-flow-line">
+<svg aria-hidden="true" class="flow-line flow-line-heading" preserveAspectRatio="none" viewBox="0 0 300 60"><path d="M10,45 C80,15 120,50 180,22 S 260,12 290,28"/></svg>
 <h2 data-i18n="pickPackage">اختاري البكج</h2>
 </div>
 <div aria-label="اختيار البكج" class="package-grid" id="packageGrid" role="radiogroup">
 <button aria-checked="true" class="package-card selected" data-package="plasma-complete" role="radio" type="button">
 <span class="selected-check" aria-hidden="true">✓</span>
+<span class="package-media">
+<img alt="" height="1254" loading="lazy" src="assets/plasma-complete-1080.webp" width="1254"/>
 <span class="badge" data-i18n="bestValue">الأكثر توفيرًا</span>
+</span>
+<span class="package-body">
 <span class="package-name" data-i18n="completeName">بكج بلازما الكامل</span>
 <span class="package-includes" data-i18n="completeIncludes">شامبو، بلسم، ماسك، سيروم</span>
 <span class="price"><del>40 <span data-i18n="jod">د.أ</span></del><strong>30 <span data-i18n="jod">د.أ</span></strong></span>
-<span class="delivery-line" data-i18n="deliveryIncluded">شامل التوصيل</span>
+<span class="delivery-note"><svg aria-hidden="true" class="delivery-icon" viewBox="0 0 24 24"><path d="M3 6h11v9H3z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 10h4l3 3v2h-7z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="17.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-i18n="deliveryIncluded">السعر شامل التوصيل</span></span>
+</span>
 </button>
 <button aria-checked="false" class="package-card" data-package="plasma-duo" role="radio" type="button">
 <span class="selected-check" aria-hidden="true">✓</span>
+<span class="package-media">
+<img alt="" height="1254" loading="lazy" src="assets/plasma-duo-1080.webp" width="1254"/>
+</span>
+<span class="package-body">
 <span class="package-name" data-i18n="duoName">بكج بلازما الثنائي</span>
 <span class="package-includes" data-i18n="duoIncludes">شامبو، بلسم</span>
 <span class="price"><del>25 <span data-i18n="jod">د.أ</span></del><strong>20 <span data-i18n="jod">د.أ</span></strong></span>
-<span class="delivery-line" data-i18n="deliveryIncluded">شامل التوصيل</span>
+<span class="delivery-note"><svg aria-hidden="true" class="delivery-icon" viewBox="0 0 24 24"><path d="M3 6h11v9H3z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 10h4l3 3v2h-7z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="17.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-i18n="deliveryIncluded">السعر شامل التوصيل</span></span>
+</span>
 </button>
 </div>
 </section>
@@ -107,19 +116,14 @@
 <button aria-label="زيادة الكمية" data-qty="plus" type="button">＋</button>
 </div>
 </div>
-<div class="field full">
-<label for="notes"><span data-i18n="notes">ملاحظات</span> <small data-i18n="optional">(اختياري)</small></label>
-<textarea id="notes" maxlength="300" name="notes" rows="2"></textarea>
-</div>
-
 <div class="order-summary full" id="orderSummary">
 <h2 data-i18n="summaryTitle">ملخص الطلب</h2>
 <div class="summary-row"><span id="summaryPackageName">بكج بلازما الكامل</span><span id="summaryQty">× 1</span></div>
 <div class="summary-row grand"><span data-i18n="total">الإجمالي</span><strong id="summaryTotal">30 د.أ</strong></div>
-<p class="delivery-line" data-i18n="deliveryIncluded">شامل التوصيل</p>
+<p class="delivery-line"><svg aria-hidden="true" class="delivery-icon" viewBox="0 0 24 24"><path d="M3 6h11v9H3z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 10h4l3 3v2h-7z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="17.5" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-i18n="deliveryIncludedSummary">التوصيل مشمول بالسعر</span></p>
 </div>
 
-<button class="submit-btn full" id="submitBtn" type="submit">
+<button class="submit-btn full sheen-el sheen-champagne" id="submitBtn" type="submit">
 <span aria-hidden="true" class="submit-icon">✓</span>
 <span data-i18n="submitOrder" id="submitBtnLabel">تأكيد الطلب</span>
 </button>

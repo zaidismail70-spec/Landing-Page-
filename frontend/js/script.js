@@ -39,6 +39,62 @@ const submitOrderFn = httpsCallable(functionsInstance, "submitOrder");
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
+// --- Motion helpers (used by package selection + the initMotion IIFE below) ---
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function triggerCardGlow(card) {
+  if (reduceMotion) return;
+  card.classList.remove("just-selected");
+  void card.offsetWidth; // force reflow so the animation can retrigger on repeat selections
+  card.classList.add("just-selected");
+  card.addEventListener(
+    "animationend",
+    () => card.classList.remove("just-selected"),
+    { once: true }
+  );
+  const check = card.querySelector(".selected-check");
+  if (check) spawnParticles(check, 10);
+}
+
+function stopHandlePulse() {
+  $("#baHandle")?.classList.remove("pulse");
+}
+
+// Lightweight one-shot DOM/CSS particle burst — no canvas, no library. Spawns
+// `count` small circle/square spans inside a short-lived container appended
+// to `originEl` (which must be position:relative/absolute so the burst's
+// inset:0 container lines up with it), each flying out at a randomized angle
+///distance/timing, then removes the whole container once the slowest
+// particle has finished. Never called when reduceMotion is true.
+function spawnParticles(originEl, count = 10) {
+  if (reduceMotion || !originEl) return;
+  const colors = ["#B8923B", "#E8D6A6", "#6A5218", "#F7F0DF"];
+  const burst = document.createElement("span");
+  burst.className = "particle-burst";
+  burst.setAttribute("aria-hidden", "true");
+  let maxLife = 0;
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("span");
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 22 + Math.random() * 26;
+    const size = 4 + Math.random() * 4;
+    const dur = 500 + Math.random() * 350;
+    const delay = Math.random() * 120;
+    particle.className = "particle " + (Math.random() > 0.5 ? "is-circle" : "is-square");
+    particle.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+    particle.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+    particle.style.setProperty("--rot", `${Math.round((Math.random() - 0.5) * 360)}deg`);
+    particle.style.setProperty("--size", `${size}px`);
+    particle.style.setProperty("--dur", `${dur}ms`);
+    particle.style.setProperty("--delay", `${delay}ms`);
+    particle.style.setProperty("--pcolor", colors[i % colors.length]);
+    burst.appendChild(particle);
+    maxLife = Math.max(maxLife, dur + delay);
+  }
+  originEl.appendChild(burst);
+  window.setTimeout(() => burst.remove(), maxLife + 150);
+}
+
 // --- Content -----------------------------------------------------------
 const content = {
   ar: {
@@ -46,7 +102,6 @@ const content = {
     metaDescription: "روتين بلازما الكامل لشعر أنعم وأقوى. اختاري البكج وأكملي طلبك مباشرة من الموقع.",
     orderNow: "اطلبي الآن",
     heroHeadline: "روتين بلازما الكامل لشعر أنعم وأقوى",
-    heroSub: "منتجات بلازما الأربعة في بكج واحد، بسعر واحد يشمل التوصيل.",
     pickPackage: "اختاري البكج",
     bestValue: "الأكثر توفيرًا",
     completeName: "بكج بلازما الكامل",
@@ -54,7 +109,8 @@ const content = {
     duoName: "بكج بلازما الثنائي",
     duoIncludes: "شامبو، بلسم",
     jod: "د.أ",
-    deliveryIncluded: "شامل التوصيل",
+    deliveryIncluded: "السعر شامل التوصيل",
+    deliveryIncludedSummary: "التوصيل مشمول بالسعر",
     fullName: "الاسم الكامل",
     phone: "رقم الهاتف",
     phonePlaceholder: "07XXXXXXXX",
@@ -62,12 +118,10 @@ const content = {
     chooseGovernorate: "اختاري",
     area: "المنطقة والعنوان",
     quantity: "الكمية",
-    notes: "ملاحظات",
-    optional: "(اختياري)",
     summaryTitle: "ملخص الطلب",
     total: "الإجمالي",
     submitOrder: "تأكيد الطلب",
-    submitOrderSaving: "جارٍ الحفظ...",
+    submitOrderSaving: "جارٍ إرسال طلبك...",
     privacyNote: "باستكمال الطلب، سيتم استخدام بياناتك لتأكيد الطلب والتوصيل فقط.",
     errorRequired: "يرجى تعبئة جميع الحقول المطلوبة.",
     errorName: "الرجاء إدخال الاسم الكامل.",
@@ -77,7 +131,7 @@ const content = {
     genericError: "تعذر حفظ الطلب، الرجاء المحاولة مرة أخرى.",
     orderConfirmed: "تم استلام طلبك بنجاح",
     orderNumberLabel: "رقم طلبك:",
-    successContactNote: "سنتواصل معك قريبًا لتأكيد الطلب.",
+    successContactNote: "سنتواصل معك قريبًا لتأكيد طلبك، إن شاء الله.",
     beforeLabel: "قبل استخدام بكج بلازما",
     afterLabel: "بعد استخدام بكج بلازما",
     compareAriaLabel: "قارني قبل وبعد استخدام بكج بلازما",
@@ -89,7 +143,6 @@ const content = {
     metaDescription: "Your complete PLASMA routine for softer, stronger hair. Choose a set and complete your order right on the site.",
     orderNow: "Order now",
     heroHeadline: "Your complete PLASMA routine for softer, stronger hair",
-    heroSub: "All four PLASMA products in one set, at one price that includes delivery.",
     pickPackage: "Choose your set",
     bestValue: "Best value",
     completeName: "PLASMA Complete Package",
@@ -97,7 +150,8 @@ const content = {
     duoName: "PLASMA Duo Package",
     duoIncludes: "Shampoo, conditioner",
     jod: "JOD",
-    deliveryIncluded: "Delivery included",
+    deliveryIncluded: "Delivery included in the price",
+    deliveryIncludedSummary: "Delivery is included in the price",
     fullName: "Full name",
     phone: "Phone number",
     phonePlaceholder: "07XXXXXXXX",
@@ -105,12 +159,10 @@ const content = {
     chooseGovernorate: "Choose",
     area: "Area & detailed address",
     quantity: "Quantity",
-    notes: "Notes",
-    optional: "(optional)",
     summaryTitle: "Order summary",
     total: "Total",
     submitOrder: "Confirm order",
-    submitOrderSaving: "Saving...",
+    submitOrderSaving: "Sending your order...",
     privacyNote: "By completing the order, your information will be used only to confirm and deliver your order.",
     errorRequired: "Please fill in all required fields.",
     errorName: "Please enter your full name.",
@@ -120,7 +172,7 @@ const content = {
     genericError: "We couldn't save your order, please try again.",
     orderConfirmed: "Your order has been received successfully.",
     orderNumberLabel: "Order number:",
-    successContactNote: "We will contact you shortly to confirm your order.",
+    successContactNote: "We'll contact you shortly to confirm your order.",
     beforeLabel: "Before using the PLASMA package",
     afterLabel: "After using the PLASMA package",
     compareAriaLabel: "Compare before and after using the PLASMA package",
@@ -135,12 +187,10 @@ const PACKAGES = {
   "plasma-complete": {
     unitPrice: 30,
     oldUnitPrice: 40,
-    image: "assets/plasma-complete-1080.webp",
   },
   "plasma-duo": {
     unitPrice: 20,
     oldUnitPrice: 25,
-    image: "assets/plasma-duo-1080.webp",
   },
 };
 
@@ -195,13 +245,20 @@ function buildGovernorateOptions() {
 }
 
 // --- Package selector -----------------------------------------------------
+let packagesRenderedOnce = false;
 function renderPackages() {
   $$(".package-card").forEach((card) => {
     const key = card.dataset.package;
     const isSelected = key === selectedPackage;
+    const wasSelected = card.classList.contains("selected");
     card.classList.toggle("selected", isSelected);
     card.setAttribute("aria-checked", String(isSelected));
+    // Only glow on an actual selection change made by the user, never on the
+    // initial page render (see the bottom of this file, `renderPackages()` runs
+    // once at load to reflect the default-selected package).
+    if (isSelected && !wasSelected && packagesRenderedOnce) triggerCardGlow(card);
   });
+  packagesRenderedOnce = true;
 }
 
 function selectPackage(key) {
@@ -244,9 +301,6 @@ function updateSummary() {
   $("#summaryPackageName").textContent = name;
   $("#summaryQty").textContent = `× ${quantity}`;
   $("#summaryTotal").textContent = `${pkg.unitPrice * quantity} ${content[lang].jod}`;
-  const img = $("#packageImage");
-  img.src = pkg.image;
-  img.alt = name;
 }
 
 // --- Language switching ---------------------------------------------------
@@ -262,6 +316,10 @@ function setLanguage(next) {
   $$('[data-i18n-placeholder]').forEach((el) => {
     const v = content[lang][el.dataset.i18nPlaceholder];
     if (v !== undefined) el.placeholder = v;
+  });
+  $$('[data-i18n-alt]').forEach((el) => {
+    const v = content[lang][el.dataset.i18nAlt];
+    if (v !== undefined) el.alt = v;
   });
   document.title = content[lang].pageTitle;
   const desc = content[lang].metaDescription;
@@ -282,6 +340,10 @@ function setLanguage(next) {
   clearFieldErrors();
   $("#baCompare").setAttribute("aria-label", content[lang].compareAriaLabel);
   $("#baHandle").setAttribute("aria-label", content[lang].compareHandleLabel);
+  // Before/after label widths change with the text (AR vs EN, and the
+  // data-i18n loop above already swapped it) — let the slider recompute
+  // which labels currently fit their own revealed region.
+  document.dispatchEvent(new Event("betolla:langchange"));
 }
 $("#langToggle").addEventListener("click", () => setLanguage(lang === "ar" ? "en" : "ar"));
 
@@ -356,6 +418,9 @@ function showSuccess(order) {
   $("#successOrderNumber").textContent = order.orderNumber;
   $("#successPanel").hidden = false;
   $$("#orderForm input, #orderForm select, #orderForm textarea, #orderForm button[data-qty]").forEach((el) => (el.disabled = true));
+  // Purely decorative — fires only on a genuine success, never on loading or
+  // error, and never touches the order/network result above.
+  spawnParticles($("#successPanel"), 12);
 }
 
 $("#orderForm").addEventListener("submit", async (e) => {
@@ -381,7 +446,12 @@ $("#orderForm").addEventListener("submit", async (e) => {
     governorate: f.governorate.value,
     governorateLabel: governorateOption ? governorateOption.textContent : "",
     areaAddress: f.area.value.trim(),
-    notes: f.notes.value.trim(),
+    // The Notes field was removed from the form; the backend's own
+    // validateOrder() already treats notes as optional and defaults a
+    // missing value to "" (see backend/functions/src/validateOrder.js), so
+    // sending "" here explicitly just keeps the payload shape unchanged
+    // rather than relying on that default.
+    notes: "",
     language: lang,
   };
 
@@ -401,14 +471,51 @@ $("#orderForm").addEventListener("submit", async (e) => {
 (function initCompareSlider() {
   const frame = $("#baFrame");
   const handle = $("#baHandle");
+  const tagBefore = $(".ba-tag-before");
+  const tagAfter = $(".ba-tag-after");
   if (!frame || !handle) return;
   let pos = 50;
+
+  // A tag's own corner (14px inset) always sits inside its own image's
+  // revealed region — the "before" region always starts at the frame's own
+  // start edge and the "after" region always ends at its end edge, whatever
+  // the handle position — so a tag never needs to move, only hide, to stay
+  // off the opposite image. Hide it the moment its region can no longer fit
+  // its current rendered width (+14px inset +4px safety margin); show it
+  // again once there's room. Re-measured on every position change, on
+  // resize (frame width changes across breakpoints), and after a language
+  // switch (label text width changes) — never on a timer, so it's always
+  // exact for the frame's actual current size.
+  function updateTagVisibility() {
+    if (!tagBefore || !tagAfter) return;
+    const frameWidth = frame.getBoundingClientRect().width;
+    if (!frameWidth) return;
+    const beforeRegionPx = (frameWidth * pos) / 100;
+    const afterRegionPx = (frameWidth * (100 - pos)) / 100;
+    const margin = 14 + 4; // the tag's own inset-inline offset + a small safety gap
+    tagBefore.classList.toggle("ba-tag-hidden", beforeRegionPx < tagBefore.offsetWidth + margin);
+    tagAfter.classList.toggle("ba-tag-hidden", afterRegionPx < tagAfter.offsetWidth + margin);
+  }
 
   function setPos(next) {
     pos = Math.max(0, Math.min(100, next));
     frame.style.setProperty("--ba-pos", String(pos));
     handle.setAttribute("aria-valuenow", String(Math.round(pos)));
+    updateTagVisibility();
   }
+
+  window.addEventListener("resize", updateTagVisibility, { passive: true });
+  document.addEventListener("betolla:langchange", updateTagVisibility);
+  // .hero-copy and .ba-compare both scale in on load (see the gentle-in
+  // entrance animation in styles.css) — #baFrame is a descendant of both, so
+  // measuring it mid-animation (frame.getBoundingClientRect() inside
+  // updateTagVisibility) reads a transiently shrunk width and can hide a
+  // label that actually fits once things settle. Recompute once the slower
+  // of the two (.ba-compare, which starts after a delay) finishes, plus a
+  // safety-net timeout in case that event is ever missed.
+  const compareEl = $(".ba-compare");
+  if (compareEl) compareEl.addEventListener("animationend", updateTagVisibility, { once: true });
+  window.setTimeout(updateTagVisibility, 900);
 
   function posFromClientX(clientX) {
     const rect = frame.getBoundingClientRect();
@@ -428,6 +535,7 @@ $("#orderForm").addEventListener("submit", async (e) => {
     window.removeEventListener("pointerup", stopDrag);
   }
   function startDrag(e) {
+    stopHandlePulse();
     dragging = true;
     setPos(posFromClientX(e.clientX));
     e.preventDefault();
@@ -443,6 +551,7 @@ $("#orderForm").addEventListener("submit", async (e) => {
   });
 
   handle.addEventListener("keydown", (e) => {
+    stopHandlePulse();
     const step = e.shiftKey ? 10 : 4;
     const rtl = lang === "ar";
     // Arrow keys move the handle in the direction they point, visually — which means
@@ -460,3 +569,122 @@ $("#orderForm").addEventListener("submit", async (e) => {
 // --- Init ---------------------------------------------------------------
 setLanguage(lang);
 renderPackages();
+
+// --- Motion: header scroll shadow, scroll reveals, one-time sheens, handle
+// pulse. Purely presentational — touches no checkout/order/pricing state.
+// Fully skipped under prefers-reduced-motion (content stays as CSS renders
+// it by default: immediately visible, no reveal/sheen/pulse classes ever
+// added).
+(function initMotion() {
+  const nav = $(".nav");
+  if (nav) {
+    const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  if (reduceMotion || typeof IntersectionObserver === "undefined") return;
+
+  // One-time scroll reveal for package cards, the order form, and the footer.
+  // threshold 0.2 with no rootMargin: this only fires once the element is
+  // genuinely, visibly scrolling into the viewport — not pre-emptively, so
+  // the rise+fade is actually seen rather than having already happened
+  // before the user scrolled anywhere near it.
+  document.documentElement.classList.add("js-reveal-ready");
+  const revealTargets = [...$$(".package-card"), $(".order-form"), $("footer")].filter(Boolean);
+  revealTargets.forEach((el) => el.classList.add("reveal"));
+  const revealObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.2 }
+  );
+  revealTargets.forEach((el) => revealObserver.observe(el));
+  // Safety net: force everything visible after a few seconds no matter what,
+  // so a missed/late intersection callback can never leave real content
+  // (especially the order form) permanently invisible.
+  window.setTimeout(() => revealTargets.forEach((el) => el.classList.add("is-visible")), 4000);
+
+  // One-time light sweep once the product image / CTA buttons enter view.
+  const sheenTargets = [$(".mini-cta"), $("#submitBtn")].filter(Boolean);
+  const sheenObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("run");
+        obs.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.4 }
+  );
+  sheenTargets.forEach((el) => sheenObserver.observe(el));
+
+  // Headline shimmer: only animates while the hero is actually on screen —
+  // paused the instant it scrolls away, resumed the instant it scrolls back
+  // (see .hero.in-view in styles.css).
+  const heroSection = $(".hero");
+  if (heroSection) {
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => heroSection.classList.toggle("in-view", entry.isIntersecting));
+      },
+      { threshold: 0 }
+    );
+    heroObserver.observe(heroSection);
+  }
+
+  // Flowing gold lines: draw themselves once via stroke-dasharray/dashoffset
+  // the first time each enters the viewport. The path's default CSS state
+  // (see .flow-line path in styles.css) is fully drawn/visible, so if this
+  // never runs for any reason the line is simply static, never invisible.
+  $$(".flow-line path").forEach((path) => {
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = String(length);
+    path.style.strokeDashoffset = String(length);
+    // Two rAFs: the browser must actually paint the fully-hidden state at
+    // least once before the transition is attached and observation starts,
+    // otherwise it has no "from" value to interpolate and the draw-in just
+    // snaps straight to fully-visible instead of animating.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        path.style.transition = "stroke-dashoffset 1.4s ease";
+        const lineObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              path.style.strokeDashoffset = "0";
+              obs.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.2 }
+        );
+        lineObserver.observe(path.closest(".flow-line"));
+      });
+    });
+  });
+
+  // One spring pulse on the comparison handle once the slider actually
+  // scrolls into view (not a fixed delay from page load), stopping for good
+  // the moment the user touches/drags/keys it (see stopHandlePulse(), wired
+  // into the slider's own drag/keydown handlers above).
+  const handle = $("#baHandle");
+  const compare = $("#baCompare");
+  if (handle && compare) {
+    const pulseObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          handle.classList.add("pulse");
+          window.setTimeout(() => handle.classList.remove("pulse"), 1100);
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    pulseObserver.observe(compare);
+  }
+})();

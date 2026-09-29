@@ -49,11 +49,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* =========================================================
    Header
    ========================================================= */
-.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 16px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--color-border)}
-.brand{display:flex;align-items:center;min-width:max-content}
-.logo-window{display:block;position:relative;width:110px;height:48px;overflow:hidden}
-.brand-logo{position:absolute;width:150px;height:150px;max-width:none;left:-16px;top:-50px;object-fit:contain}
-.nav-actions{display:flex;align-items:center;gap:8px}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--color-border);transition:box-shadow .3s ease,background-color .3s ease}
+.nav.is-scrolled{background:rgba(255,255,255,.98);box-shadow:0 6px 20px rgba(83,63,22,.08)}
+.brand{display:flex;align-items:center;min-width:0;flex-shrink:1}
+.logo-window{display:block;width:clamp(84px,30vw,150px);aspect-ratio:411/198;flex-shrink:1}
+.brand-logo{width:100%;height:100%;object-fit:contain;object-position:center}
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .lang{width:var(--touch-min);height:var(--touch-min);border:1px solid var(--color-border);border-radius:50%;background:transparent;color:var(--color-ink);font:700 12px "Tajawal";flex-shrink:0}
 .mini-cta{min-height:var(--touch-min);padding:10px 16px;font-size:14px}
 
@@ -65,75 +66,202 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .primary-btn:hover,.mini-cta:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(83,63,22,.24)}
 .secondary-btn{background:transparent;color:var(--color-ink);border:1px solid rgba(83,63,22,.35);min-height:var(--touch-min)}
 .secondary-btn:hover{background:var(--color-ink);color:#fff}
+.mini-cta:active,.primary-btn:active,.secondary-btn:active,.submit-btn:active,.lang:active{transform:scale(.96);opacity:.85}
 
 /* =========================================================
    Layout
    ========================================================= */
-.section{width:min(1100px,100%);margin-inline:auto;padding:28px 16px}
+/* overflow-x alone, without an explicit overflow-y, gets promoted to
+   overflow-y:auto per spec (the "visible" axis can't pair with a non-visible
+   one) — on a section whose absolutely-positioned decorative bleed (the
+   atmosphere blobs below) genuinely extends a little past its own box, that
+   silently turns the section into its OWN scrollable container with a real,
+   visible nested scrollbar. overflow-y:clip pairs legally with hidden (both
+   non-visible) so nothing gets promoted, and clip never scrolls. */
+.section{width:min(1100px,100%);margin-inline:auto;padding:28px 16px;overflow-x:hidden;overflow-y:clip}
 
 /* =========================================================
    Hero — compact on mobile, image never dominates the screen
    ========================================================= */
 .hero{display:flex;flex-direction:column;gap:16px;padding-block:16px 8px;text-align:center}
-.hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
-.hero-copy p{max-width:480px;margin:0 auto;color:var(--color-text-muted)}
-.hero-visual{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--color-tint);height:clamp(210px,52vw,280px);display:flex;align-items:center;justify-content:center}
-.hero-visual img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .25s ease,transform .4s ease}
+.hero-copy h1{font-size:var(--text-heading);line-height:1.3;margin:0;letter-spacing:-.01em;font-weight:800}
+/* Shimmer only on the hero headline, never every heading. The solid
+   --color-ink fallback above already applies when background-clip:text
+   isn't supported (the @supports gate below never fires), so the text is
+   always readable either way. Paused via .hero.in-view, same switch as the
+   ambient blobs, and skipped entirely if animations are disabled globally
+   (see the prefers-reduced-motion block at the end of this file, which
+   already forces every animation to 1 frame — here we additionally pin the
+   text to a solid color so it never gets stuck mid-gradient). */
+@supports (background-clip:text) or (-webkit-background-clip:text){
+  .shimmer-title{
+    background-image:linear-gradient(100deg,#6A5218 0%,#B8923B 24%,#F7F0DF 48%,#E8D6A6 64%,#6A5218 100%);
+    background-size:250% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+    animation:title-shimmer 6s linear infinite;
+    animation-play-state:paused;
+  }
+  .hero.in-view .shimmer-title{animation-play-state:running}
+}
+@keyframes title-shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@media(prefers-reduced-motion:reduce){
+  .shimmer-title{background:none;-webkit-text-fill-color:currentColor;color:var(--color-ink)}
+}
+.flow-line{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:visible}
+.flow-line path{fill:none;stroke:#B8923B;stroke-width:1.6;stroke-linecap:round;opacity:.4;stroke-dashoffset:0}
+
+/* One-time light sweep — used for the product image (champagne tint) and the
+   two real CTA buttons (default white tint). Runs once via JS adding .run
+   when the element enters the viewport; never repeats. Wider + brighter band
+   than a typical hover-shine so it reads as a clearly visible sweep. */
+.sheen-el{position:relative;overflow:hidden}
+.sheen-el::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(75deg,transparent 32%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.75) 52%,transparent 68%);transform:translateX(-140%);opacity:0}
+.sheen-el.sheen-champagne::before{background:linear-gradient(75deg,transparent 32%,rgba(232,214,166,.65) 48%,rgba(247,240,223,.85) 52%,transparent 68%)}
+.sheen-el.run::before{animation:sheen-sweep 1.1s ease}
+@keyframes sheen-sweep{0%{transform:translateX(-140%);opacity:0}12%{opacity:1}100%{transform:translateX(140%);opacity:0}}
 
 /* =========================================================
    Before/after comparison — drag, touch, or arrow keys.
-   NOTE: the two panels are clean placeholder gradients, not
-   photos — see README "Missing assets" until real approved
-   before/after photos of the same model are supplied.
    ========================================================= */
-.ba-compare{margin:14px auto 0;max-width:420px}
+.ba-compare{margin:10px auto 0;max-width:420px}
 .ba-frame{position:relative;overflow:hidden;border-radius:var(--radius-md);aspect-ratio:16/10;box-shadow:var(--shadow-card-rest);user-select:none;-webkit-user-select:none;touch-action:none}
 .ba-panel{position:absolute;inset:0}
-/* Pinned to each panel's own reveal side (logical, so it mirrors correctly for RTL) rather
-   than centered on the full frame — centering both would place them on top of each other. */
-.ba-before .ba-tag{position:absolute;bottom:14px;inset-inline-start:14px}
-.ba-after .ba-tag{position:absolute;bottom:14px;inset-inline-end:14px}
-.ba-after{background:linear-gradient(135deg,#f6efdf,#e5d0a1)}
-.ba-before{background:linear-gradient(135deg,#cbbfa0,#9c8f72);clip-path:inset(0 calc(100% - var(--ba-pos) * 1%) 0 0)}
+.ba-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%;background:var(--color-tint)}
+.ba-before{clip-path:inset(0 calc(100% - var(--ba-pos) * 1%) 0 0)}
 html[dir="rtl"] .ba-before{clip-path:inset(0 0 0 calc(100% - var(--ba-pos) * 1%))}
-.ba-tag{background:rgba(255,255,255,.9);color:var(--color-ink);padding:6px 12px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;white-space:nowrap}
+/* Tags live at the frame level (siblings of the clipped panels, not children of them) and are
+   always painted above both photo layers, so the reveal position can never clip them or bury
+   them under the opposing layer — pinned to each side's own logical corner so they mirror
+   correctly for RTL, and never centered on the full frame (centering both would stack them).
+   Each tag's own corner sits inside the region its image is actually revealed in (the "before"
+   region always starts at the frame's start edge, the "after" region always ends at the frame's
+   end edge, regardless of handle position) — so a tag only ever needs to fully HIDE, never
+   reposition, to stay off the opposite image: initCompareSlider() in script.js measures the
+   current region width against the tag's own rendered width on every drag/keyboard/resize/
+   language change and toggles .ba-tag-hidden the moment it would no longer fit. */
+.ba-tag{position:absolute;bottom:14px;z-index:3;pointer-events:none;background:rgba(255,255,255,.92);color:var(--color-ink);padding:clamp(5px,1.6vw,6px) clamp(9px,3vw,12px);border-radius:var(--radius-pill);font-size:clamp(11px,3.2vw,13px);font-weight:700;white-space:normal;max-width:calc(50% - 20px);text-align:center;line-height:1.25;box-shadow:0 2px 8px rgba(83,63,22,.12);opacity:1;transform:none;transition:opacity .25s ease,transform .25s ease}
+.ba-tag-before{inset-inline-start:14px}
+.ba-tag-after{inset-inline-end:14px}
+.ba-tag.ba-tag-hidden{opacity:0;transform:translateY(4px) scale(.96)}
 .ba-handle{position:absolute;top:0;bottom:0;inset-inline-start:calc(var(--ba-pos) * 1%);transform:translateX(-50%);display:flex;align-items:center;width:0}
 html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .ba-handle::before{content:"";position:absolute;top:0;bottom:0;inset-inline-start:-1px;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .ba-handle::after{content:"↔";position:absolute;top:50%;inset-inline-start:50%;transform:translate(-50%,-50%);width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--color-ink);color:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 4px 12px rgba(83,63,22,.3);cursor:ew-resize}
 .ba-handle:focus-visible::after{outline:3px solid var(--color-accent);outline-offset:2px}
+/* One visible spring pulse once the slider scrolls into view, then stops for
+   good the instant the user drags or uses the arrow keys (script.js removes
+   .pulse in both handlers, and only adds it via an IntersectionObserver —
+   see initMotion()). */
+.ba-handle.pulse::after{animation:handle-pulse 1s cubic-bezier(.34,1.4,.64,1) 1}
+@keyframes handle-pulse{
+  0%{transform:translate(-50%,-50%) scale(1);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 0 rgba(158,137,89,.55)}
+  45%{transform:translate(-50%,-50%) scale(1.22);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 14px rgba(158,137,89,0)}
+  100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 4px 12px rgba(83,63,22,.3),0 0 0 0 rgba(158,137,89,0)}
+}
 
 /* =========================================================
    Subtle motion — entrance only, respects reduced-motion below
    ========================================================= */
-@keyframes gentle-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.hero-copy,.hero-visual,.package-card{animation:gentle-in .5s ease both}
-.package-card:nth-child(2){animation-delay:.08s}
-@media(hover:hover) and (pointer:fine){.hero-visual:hover img{transform:scale(1.02)}}
+/* A restrained spring: opacity+translate+scale settling with a very small
+   overshoot (cubic-bezier(.34,1.35,.64,1) — a toned-down "ease-out-back"),
+   not a cartoonish bounce. */
+@keyframes gentle-in{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+/* Hero title first, then the comparison slider — landing ~120ms apart
+   instead of both at once (deliberately an obvious stagger). */
+.hero-copy{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) both}
+.ba-compare{animation:gentle-in .6s cubic-bezier(.34,1.35,.64,1) .12s both}
 .success-panel{animation:gentle-in .4s ease both}
+
+/* One-time scroll reveal (package cards, the order form, the footer) — JS-gated
+   progressive enhancement: without JS, or under prefers-reduced-motion, none of
+   this applies and the content is simply visible by default. An obvious 22px
+   rise + a clearly-below-full starting opacity so the reveal is unmistakable,
+   not a barely-there fade. */
+.js-reveal-ready .reveal{opacity:0;transform:translateY(22px) scale(.98);transition:opacity .55s ease,transform .55s cubic-bezier(.34,1.35,.64,1)}
+.js-reveal-ready .reveal.is-visible{opacity:1;transform:none}
+.js-reveal-ready .package-card.reveal:nth-child(2){transition-delay:.12s}
 
 /* =========================================================
    Section headings
    ========================================================= */
-.section-heading{margin-bottom:16px;text-align:center}
+.section-heading{position:relative;margin-bottom:16px;text-align:center}
+.flow-line-heading{top:-14px;left:-6%;right:-6%;bottom:auto;height:70px;width:112%}
+@media(max-width:599px){.flow-line-heading{display:none}}
 .section-heading h2{font-size:clamp(22px,5.5vw,32px);margin:0;letter-spacing:-.01em}
+
+/* =========================================================
+   Page atmosphere — two low-opacity blurred glow blobs, well behind their
+   section's own opaque cards/form (which is what actually sits under any
+   text), never behind text directly, extremely slow drift.
+   ========================================================= */
+#packages{position:relative;isolation:isolate;overflow-x:hidden;overflow-y:clip}
+#packages::before{content:"";position:absolute;top:-40px;inset-inline-start:-5%;width:60%;max-width:420px;aspect-ratio:1;background:radial-gradient(circle,#E8D6A6 0%,transparent 70%);filter:blur(50px);opacity:.10;z-index:-1;pointer-events:none;animation:atmosphere-drift 22s ease-in-out infinite}
+#order{position:relative;isolation:isolate;overflow-x:hidden;overflow-y:clip}
+#order::before{content:"";position:absolute;bottom:-60px;inset-inline-end:-4%;width:55%;max-width:380px;aspect-ratio:1;background:radial-gradient(circle,#B8923B 0%,transparent 70%);filter:blur(56px);opacity:.09;z-index:-1;pointer-events:none;animation:atmosphere-drift 26s ease-in-out infinite reverse}
+@keyframes atmosphere-drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(2%,-2%) scale(1.06)}}
+@media(max-width:599px){
+  #order::before{display:none}
+  #packages::before{animation:none;width:70%;max-width:260px;opacity:.08;filter:blur(36px)}
+}
 
 /* =========================================================
    Package selector — stacked, full-width, one tap to select
    ========================================================= */
 .package-grid{display:grid;grid-template-columns:1fr;gap:14px}
-.package-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:18px 20px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
+/* Mobile: image left, details right (keeps each card short so both remain
+   compact and scannable without an oversized vertical product photo).
+   Tablet+ below flips this to image-on-top, two columns side by side. */
+.package-card{position:relative;display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start;text-align:start;border:2px solid var(--color-border);border-radius:var(--radius-md);background:#fff;padding:14px;box-shadow:var(--shadow-card-rest);transition:transform var(--ease-standard),box-shadow var(--ease-standard),border-color var(--ease-standard),background-color var(--ease-standard);width:100%;min-height:var(--touch-min)}
+.package-media{position:relative;width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--color-tint)}
+.package-media img{width:100%;height:100%;object-fit:cover;display:block}
+.package-body{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
 .package-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover)}
-.package-card.selected{border-color:var(--color-accent);background:var(--color-tint);box-shadow:0 0 0 3px rgba(158,137,89,.18),var(--shadow-card-hover)}
-.selected-check{position:absolute;top:12px;inset-inline-end:12px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--color-ink);color:#fff;font-size:12px;font-weight:800;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .2s ease}
-.package-card.selected .selected-check{opacity:1;transform:scale(1)}
-.badge{display:inline-block;background:var(--color-ink);color:#fff;padding:4px 11px;border-radius:var(--radius-pill);font-size:11px;font-weight:800}
-.package-name{font-size:17px;font-weight:800;margin-top:2px}
-.package-includes{color:var(--color-text-muted);font-size:14px}
-.package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:6px}
-.package-card .price strong{font-size:var(--text-price);color:var(--color-ink);font-weight:800}
-.package-card .price del{color:var(--color-text-muted);font-size:clamp(18px,1vw + 14px,20px);font-weight:600}
-.delivery-line{color:var(--color-ink);font-size:13px;font-weight:700}
+.package-card:active{transform:scale(.98)}
+/* Soft external gold glow + a faint internal champagne gradient, replacing
+   the previous flat-tint fill + heavy solid border. */
+.package-card.selected{border-color:rgba(184,146,59,.4);background:linear-gradient(165deg,#fff 0%,var(--color-tint) 130%);box-shadow:0 0 0 1px rgba(184,146,59,.16),0 12px 28px rgba(184,146,59,.22),var(--shadow-card-hover)}
+/* One-shot glow + border shimmer + a small spring lift the moment a card
+   BECOMES selected (see triggerCardGlow() in script.js) — not continuous. */
+.package-card.just-selected{animation:selected-glow 1s ease,card-spring-lift .5s cubic-bezier(.34,1.35,.64,1)}
+.package-card.just-selected::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(232,214,166,.6) 50%,transparent 70%);background-size:250% 100%;background-position:-125% 0;animation:border-shimmer .9s ease}
+@keyframes selected-glow{0%{box-shadow:0 0 0 0 rgba(184,146,59,.35),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}70%{box-shadow:0 0 0 14px rgba(184,146,59,0),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}100%{box-shadow:0 0 0 0 rgba(184,146,59,0),0 0 0 1px rgba(184,146,59,.16),var(--shadow-card-hover)}}
+@keyframes card-spring-lift{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-6px) scale(1.015)}100%{transform:translateY(0) scale(1)}}
+@keyframes border-shimmer{0%{background-position:-125% 0}100%{background-position:125% 0}}
+.selected-check{position:absolute;top:12px;inset-inline-end:12px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--color-ink);color:#fff;font-size:12px;font-weight:800;opacity:0;transform:scale(.6);transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.5,.64,1),background-color .2s ease}
+.package-card.selected .selected-check{opacity:1;transform:scale(1);background:var(--color-accent)}
+.package-card.just-selected .selected-check{animation:check-pop .5s cubic-bezier(.34,1.5,.64,1)}
+@keyframes check-pop{0%{transform:scale(.6)}55%{transform:scale(1.25)}80%{transform:scale(.92)}100%{transform:scale(1)}}
+
+/* Lightweight one-shot particle burst — plain DOM spans, CSS-driven, no
+   canvas/library. spawnParticles() in script.js creates ~8-12 of these
+   inside a short-lived .particle-burst container (removed after the
+   longest particle's animation ends), positioned at the checkmark or the
+   success panel. Disabled entirely under prefers-reduced-motion (script.js
+   never calls spawnParticles() when reduceMotion is true). */
+.particle-burst{position:absolute;inset:0;pointer-events:none}
+.particle{position:absolute;top:50%;left:50%;width:var(--size,6px);height:var(--size,6px);background:var(--pcolor,#B8923B);opacity:0;transform:translate(-50%,-50%);animation:particle-fly var(--dur,650ms) cubic-bezier(.2,.7,.3,1) var(--delay,0ms) forwards}
+.particle.is-square{border-radius:2px}
+.particle.is-circle{border-radius:50%}
+@keyframes particle-fly{
+  0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg) scale(1)}
+  100%{opacity:0;transform:translate(calc(-50% + var(--tx,20px)),calc(-50% + var(--ty,-20px))) rotate(var(--rot,180deg)) scale(.3)}
+}
+.badge{position:absolute;top:6px;inset-inline-start:6px;display:inline-block;background:var(--color-ink);color:#fff;padding:3px 8px;border-radius:var(--radius-pill);font-size:9.5px;font-weight:800;line-height:1.4}
+.package-name{font-size:17px;font-weight:800;padding-inline-end:30px}
+.package-includes{color:var(--color-text-muted);font-size:13.5px}
+.package-card .price{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.package-card .price strong{font-size:clamp(20px,4.6vw,var(--text-price));color:var(--color-ink);font-weight:800}
+.package-card .price del{color:var(--color-text-muted);font-size:clamp(15px,1vw + 11px,20px);font-weight:600}
+/* Delivery messaging inside each card: a thin gold divider, a small truck
+   icon, and clear semibold text — replaces the old plain "شامل التوصيل"
+   line with something that reads as a deliberate reassurance, not a banner. */
+.delivery-note{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(184,146,59,.35);color:var(--color-ink);font-size:12px;font-weight:600;width:100%}
+.delivery-note .delivery-icon{width:15px;height:15px;flex-shrink:0;color:var(--color-accent)}
+.package-card.selected .delivery-note{border-top-color:rgba(184,146,59,.6);font-weight:800}
+.package-card.selected .delivery-note .delivery-icon{color:var(--color-ink)}
+/* Order-summary delivery line reuses the same icon language for consistency. */
+.delivery-line{display:flex;align-items:center;gap:6px;color:var(--color-ink);font-size:13px;font-weight:700}
+.delivery-line .delivery-icon{width:14px;height:14px;flex-shrink:0;color:var(--color-accent)}
 
 /* =========================================================
    Order form — one column, full-width inputs
@@ -166,7 +294,7 @@ html[dir="rtl"] .ba-handle{transform:translateX(50%)}
 .form-status{margin:0;font-size:14px;text-align:center;min-height:18px}
 .form-status.error{color:#b83d3d;font-weight:700}
 .form-status.success{color:#1fa463;font-weight:700}
-.success-panel{display:flex;flex-direction:column;align-items:center;gap:6px;background:#f2f9f5;border:1px solid #bfe3cc;border-radius:14px;padding:20px;text-align:center}
+.success-panel{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;background:#f2f9f5;border:1px solid #bfe3cc;border-radius:14px;padding:20px;text-align:center}
 .success-panel[hidden]{display:none}
 .success-title{margin:0 0 4px;font-size:18px;font-weight:800;color:#1fa463}
 .success-row{margin:0;font-size:16px}
@@ -193,6 +321,14 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
 @media(min-width:640px){
   .section{padding:40px 24px}
   .package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Same image-left/body-right layout as mobile, just a bigger thumbnail —
+     a full-width square product photo here would make each card ~650px
+     tall (confirmed while testing: it pushed the card mostly below the
+     fold and past the scroll-reveal's intersection threshold). Staying
+     horizontal keeps both cards compact and comparable side by side. */
+  .package-card{grid-template-columns:140px 1fr;gap:16px;padding:18px}
+  .badge{font-size:10px;padding:3px 9px}
+  .package-name{font-size:19px}
   .order-form{grid-template-columns:repeat(2,1fr);padding:32px}
   footer{flex-direction:row;justify-content:space-between;text-align:start}
 }
@@ -202,16 +338,16 @@ html[dir="ltr"] .primary-btn span:last-child:not(:only-child){transform:rotate(1
    ========================================================= */
 @media(min-width:960px){
   .nav{padding:14px max(20px,calc((100% - 1100px) / 2 + 20px))}
-  .logo-window{width:140px;height:60px}
-  .brand-logo{width:172px;height:172px;left:-16px;top:-58px}
+  .logo-window{width:clamp(150px,12vw,210px)}
   html{scroll-padding-top:96px}
   .section{padding:52px 20px}
-  .hero{flex-direction:row;align-items:center;text-align:start;gap:clamp(24px,4vw,56px);padding-block:clamp(28px,4vw,52px)}
-  .hero-copy{flex:1.1}
-  .hero-copy p{margin:0 0 0}
-  .hero-visual{flex:1;height:auto;aspect-ratio:1}
-  .hero-visual img{object-fit:cover;object-position:center 38%}
-  .ba-compare{margin-inline:0;max-width:none}
+  /* No second column any more (the standalone hero product image was
+     removed — the package cards already carry their own correctly-matched
+     product photos), so the hero stays a centered single column at every
+     width, just with more breathing room than mobile. */
+  .hero{padding-block:clamp(28px,4vw,48px) clamp(16px,2vw,24px)}
+  .hero-copy{max-width:680px;margin-inline:auto}
+  .ba-compare{margin-inline:auto;max-width:640px}
   .section-heading h2{font-size:var(--text-heading)}
 }
 
